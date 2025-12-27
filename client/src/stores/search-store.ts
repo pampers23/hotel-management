@@ -8,7 +8,7 @@ interface SearchState {
     setGuests: (guests: number) => void;
     setRoomTypes: (roomType: string[]) => void;
     setPriceRange: (priceRange: [number, number]) => void;
-    setAmenties: (amenties: string[]) => void;
+    setAmenities: (amenties: string[]) => void;
     resetFilters: () => void;
 }
 
@@ -18,7 +18,7 @@ const defaultFilters: SearchFilters = {
     guests: 1,
     roomType: [],
     priceRange: [0, 2000],
-    amenties: [],
+    amenities: [],
 };
 
 export const useSearchStore = create<SearchState>()(
@@ -54,7 +54,7 @@ export const useSearchStore = create<SearchState>()(
                 }));
             },
 
-            setAmenties: (amenties) => {
+            setAmenities: (amenties) => {
                 set((state) => ({
                     filters: { ...state.filters, amenties },
                 }));
