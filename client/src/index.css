@@ -1,10 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@theme {
+  --color-background: hsl(40 33% 98%);
+  --color-foreground: hsl(220 30% 15%);
+  --color-border: hsl(40 20% 88%);
+  --color-muted: hsl(40 20% 94%);
+  --color-muted-foreground: hsl(220 15% 45%);
+  --color-primary: hsl(220 50% 20%);
+  --color-primary-foreground: hsl(40 33% 98%);
+  --color-gold: hsl(38 70% 50%);
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
 
 @layer base {
   :root {
@@ -141,7 +149,8 @@
   }
 
   .glass-card {
-    @apply bg-card/80 backdrop-blur-md border border-border/50 shadow-lg;
+    background-color: hsl(var(--card) / 0.8);
+    @apply backdrop-blur-md border border-border/50 shadow-lg;
   }
 
   .hover-lift {
