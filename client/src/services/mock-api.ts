@@ -48,13 +48,15 @@ export const roomService = {
  async checkAvailability(roomId: string, checkIn: Date, checkOut: Date): Promise<boolean> {
   await delay(300);
   // mock availability check - always available for demo
-  return true;
+  console.log(roomId, checkIn, checkOut);
+  return true;  
  },
 };
 
 export const bookingService = {
   async getBookings(userId: string): Promise<Booking[]> {
     await delay(400);
+    console.log(userId);
     return mockBookings;
   },
   
@@ -70,6 +72,7 @@ export const bookingService = {
 
   async cancelBooking(bookingId: string): Promise<boolean> {
     await delay(400);
+    console.log(bookingId);
     return true;
   }
 };

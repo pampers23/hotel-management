@@ -78,7 +78,7 @@ const RoomsPage = () => {
         <div className="container-luxury">
            <div className="flex flex-col lg:flex-row gap-8">
               {/* sidebar - desktop only */}
-              {isMobile && <FilterSidebar />}
+              {!isMobile && <FilterSidebar />}
 
               {/* main content */}
               <div className="flex-1 ">
