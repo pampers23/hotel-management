@@ -86,12 +86,13 @@ const Index = () => {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/rooms">
-                  <Button variant="gold" size="xl">
+                  <Button variant="gold" size="xl" className="cursor-pointer">
                     Explore Rooms
                     <ArrowRight className="h-5 w-5" />
                   </Button>
                 </Link>
-                <Button variant="heroOutline" size="xl">
+                <Button variant="heroOutline" size="xl" className="cursor-pointer">
+
                     Virtual Tour
                 </Button>
               </div>

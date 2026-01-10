@@ -108,8 +108,8 @@ const SearchWidget = () => {
         <div className="space-y-2">
           <Label className="text-sm font-medium text-muted-foreground">Guests</Label>
           <Select value={guests.toString()} onValueChange={(value) => setLocalGuests(parseInt(value))}>
-            <SelectTrigger className="h-12">
-              <Users className="mr-2 h-4 w-4" />
+            <SelectTrigger className="h-12 w-full p-5.5">
+              <Users className="mr-2 h-4 w-4 text-muted-foreground" />
               <SelectValue placeholder="Select guests" />
             </SelectTrigger>
             <SelectContent>
@@ -124,8 +124,8 @@ const SearchWidget = () => {
 
         {/* search button */}
         <div className="flex items-end">
-          <Button onClick={handleSearch} className="w-full h-12 bg-primary hover:bg-primary/90">
-            <Search className="mr-2 h-4 w-4" />
+          <Button onClick={handleSearch} variant="gold" size="lg" className="w-full h-12">
+            <Search className="h-4 w-4" />
             Search
           </Button>
         </div>
