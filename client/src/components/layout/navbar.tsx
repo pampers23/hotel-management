@@ -80,16 +80,16 @@ const Navbar = () => {
                     <User className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">{user?.name?.split(' ')[0]}</span>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={logout}>
+                  <Button className='cursor-pointer' variant="ghost" size="icon" onClick={logout}>
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
                 <>
-                  <Button variant="ghost" onClick={() => handleAuthClick('login')}>
+                  <Button className='cursor-pointer' variant="ghost" onClick={() => handleAuthClick('login')}>
                     Sign In
                   </Button>
-                  <Button variant="gold" onClick={() => handleAuthClick('register')}>
+                  <Button className='cursor-pointer' variant="gold" onClick={() => handleAuthClick('register')}>
                     Book Now
                   </Button>
                 </>
