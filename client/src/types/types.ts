@@ -17,7 +17,7 @@ export type Booking = {
     guests: number;
     totalPrice: number;
     status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
-    creaetedAt: Date;
+    createdAt: Date;
 }
 
 export type DateRange = {
@@ -37,7 +37,7 @@ export type Room = {
     size: number;
     bedType: string;
     images: string[];
-    amenties: string[];
+    amenities: string[];
     featured: boolean;
     available: boolean;
     rating: number;
