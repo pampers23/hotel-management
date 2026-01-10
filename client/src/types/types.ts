@@ -50,5 +50,5 @@ export type SearchFilters = {
     guests: number;
     roomType: string[];
     priceRange: [number, number];
-    amenties: string[];
+    amenities: string[];
 }
