@@ -9,6 +9,8 @@ import RoomDetailsPage from "@/pages/room-details-page";
 import BookingConfirmationPage from "@/pages/booking-confirmation-page";
 import DashboardPage from "@/pages/dashboard-page";
 import NotFound from "@/pages/not-found";
+import About from "./pages/about";
+import Contact from "./pages/contact";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
             <Route path="/rooms/:id" element={<RoomDetailsPage />} />
             <Route path="/booking/confirm/:roomId" element={<BookingConfirmationPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

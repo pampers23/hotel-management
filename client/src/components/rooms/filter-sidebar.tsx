@@ -19,6 +19,7 @@ const FilterSidebar = () => {
   const [priceRange, setLocalPriceRange] = useState<[number, number]>(
     filters.priceRange
   );
+  
 
   if (isMobile) {
     return (
