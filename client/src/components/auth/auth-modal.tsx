@@ -30,15 +30,21 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) =
     if (mode === 'login') {
       const result = await login(formData.email, formData.password);
       if (result.success) {
-        toast.success('Welcome back!');
+        toast.success('Welcome back!', {
+          id: 'auth-login-success',
+        });
         onClose();
       } else {
-        toast.error(result.error || 'Login failed');
+        toast.error(result.error || 'Login failed', {
+          id: 'auth-login-error',
+        });
       }
     } else {
       const result = await register(formData.name, formData.email, formData.password);
       if (result.success) {
-        toast.success('Account created successfully!');
+        toast.success('Account created successfully!', {
+          id: 'auth-register-success',
+        });
         onClose();
       } else {
         toast.error(result.error || 'Registration failed');
