@@ -47,7 +47,7 @@ const About = () => {
                   transition={{ delay: index * 0.1 }}
                   className="text-center"  
                 >
-                  <stat.icon className="h-8 w-8 text-gold mx-mx-auto mb-3" />
+                  <stat.icon className="h-8 w-8 text-gold mx-auto mb-3" />
                   <div className="font-heading text-3xl md:text-4xl font-bold text-primary mb-1">
                     {stat.value}  
                   </div>
