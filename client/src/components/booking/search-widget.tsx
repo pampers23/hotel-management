@@ -43,7 +43,7 @@ const SearchWidget = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.5 }}
-      className="glass-card rounded-2xl p-4 md:p-6 shadow-luxury overflow-visible"
+      className="glass-card rounded-2xl p-4 md:p-6 shadow-luxury"
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* check in date */}
@@ -54,7 +54,9 @@ const SearchWidget = () => {
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-12",
+                  "w-full justify-start text-left font-normal h-12 cursor-pointer",
+                  "transition-all duration-300",
+                  "hover:border-gold hover:ring-1 hover:ring-gold hover:text-gold",
                   !dateRange.from && "text-muted-foreground"
                 )}
               >
@@ -63,18 +65,32 @@ const SearchWidget = () => {
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="z-50 w-auto p-0 mt-2 shadow-lg rounded-xl pointer-events-auto bg-background"
+              className="z-50 w-auto p-0 mt-2 shadow-lg rounded-xl pointer-events-auto bg-background cursor-pointer"
               align="start"
               sideOffset={8}
             >
               <Calendar
                 mode="single"
                 selected={dateRange.from}
-                onSelect={(date) => setLocalDateRange((prev) => ({ ...prev, from: date }))}
+                onSelect={(date) =>
+                  setLocalDateRange((prev) => ({ ...prev, from: date }))
+                }
                 disabled={(date) => date < new Date()}
                 initialFocus
-                className="pointer-events-auto"
-              />
+                classNames={{
+                  day: "relative p-0",
+                  day_button: `
+                    h-9 w-9 rounded-md
+                    cursor-pointer
+                    transition-colors
+                    hover:bg-gold/20 hover:text-gold
+                    focus:bg-gold/20 focus:text-gold
+                    aria-selected:bg-gold
+                    aria-selected:text-black
+                  `,
+                  day_today: "border border-gold",
+                }}
+              />  
             </PopoverContent>
           </Popover>
         </div>
@@ -87,7 +103,9 @@ const SearchWidget = () => {
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal h-12",
+                  "w-full justify-start text-left font-normal h-12 cursor-pointer",
+                  "transition-all duration-300",
+                  "hover:border-gold hover:ring-1 hover:ring-gold hover:text-gold",
                   !dateRange.to && "text-muted-foreground"
                 )}
               >
@@ -103,11 +121,25 @@ const SearchWidget = () => {
             >
               <Calendar
                 mode="single"
-                selected={dateRange.to}
-                onSelect={(date) => setLocalDateRange((prev) => ({ ...prev, to: date }))}
-                disabled={(date) => date < (dateRange.from || new Date())}
+                selected={dateRange.from}
+                onSelect={(date) =>
+                  setLocalDateRange((prev) => ({ ...prev, from: date }))
+                }
+                disabled={(date) => date < new Date()}
                 initialFocus
-                className="pointer-events-auto"
+                classNames={{
+                  day: "relative p-0",
+                  day_button: `
+                    h-9 w-9 rounded-md
+                    cursor-pointer
+                    transition-colors
+                    hover:bg-gold/20 hover:text-gold
+                    focus:bg-gold/20 focus:text-gold
+                    aria-selected:bg-gold
+                    aria-selected:text-black
+                  `,
+                  day_today: "border border-gold",
+                }}
               />
             </PopoverContent>
           </Popover>
@@ -117,13 +149,34 @@ const SearchWidget = () => {
         <div className="space-y-2">
           <Label className="text-sm font-medium text-muted-foreground">Guests</Label>
           <Select value={guests.toString()} onValueChange={(value) => setLocalGuests(parseInt(value))}>
-            <SelectTrigger className="h-12 w-full p-5.5">
+            <SelectTrigger
+               className="
+                h-12 w-full p-5.5
+                transition-all duration-300
+                hover:border-gold
+                hover:ring-1 hover:ring-gold
+                data-[state=open]:border-gold
+                data-[state=open]:ring-1 data-[state=open]:ring-gold
+                cursor-pointer
+              "
+            >
               <Users className="mr-2 h-4 w-4 text-muted-foreground" />
               <SelectValue placeholder="Select guests" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="cursor-pointer">
               {[1, 2, 3, 4, 5, 6].map((num) => (
-                <SelectItem key={num} value={num.toString()}>
+                <SelectItem 
+                  key={num} 
+                  value={num.toString()}
+                  className="
+                    cursor-pointer
+                    transition-colors
+                    focus:bg-gold/20
+                    focus:text-gold
+                    data-[state=checked]:bg-gold
+                    data-[state=checked]:text-black
+                  "
+                >
                   {num} Guest{num > 1 ? 's' : ''}
                 </SelectItem>
               ))}
