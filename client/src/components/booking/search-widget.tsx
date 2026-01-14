@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar } from "@/components/ui/calendar" 
 import {
   Select,
   SelectContent,
@@ -43,11 +43,11 @@ const SearchWidget = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3, duration: 0.5 }}
-      className="glass-card rounded-2xl p-4 md:p-6 shadow-luxury"
+      className="glass-card rounded-2xl p-4 md:p-6 shadow-luxury overflow-visible"
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* check in date */}
-        <div className="space-y-2">
+        <div className="space-y-2 md:w-[260px]">
           <Label className="text-sm font-medium text-muted-foreground">Check In</Label>
           <Popover>
             <PopoverTrigger asChild>
@@ -62,7 +62,11 @@ const SearchWidget = () => {
                 {dateRange.from ? format(dateRange.from, "MMM dd, yyyy") : "Select date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent
+              className="z-50 w-auto p-0 mt-2 shadow-lg rounded-xl pointer-events-auto bg-background"
+              align="start"
+              sideOffset={8}
+            >
               <Calendar
                 mode="single"
                 selected={dateRange.from}
@@ -76,7 +80,7 @@ const SearchWidget = () => {
         </div>
 
         {/* check out date */}
-        <div className="space-y-2">
+        <div className="space-y-2 md:w-[260px]">
           <Label className="text-sm font-medium text-muted-foreground">Check Out</Label>
           <Popover>
             <PopoverTrigger asChild>
@@ -91,7 +95,12 @@ const SearchWidget = () => {
                 {dateRange.to ? format(dateRange.to, "MMM dd, yyyy") : "Select date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent
+              className="z-50 w-auto p-0 mt-2 shadow-lg rounded-xl"
+              align="start"
+              side="bottom"
+              sideOffset={8}
+            >
               <Calendar
                 mode="single"
                 selected={dateRange.to}
@@ -126,7 +135,7 @@ const SearchWidget = () => {
         <div className="flex items-end">
           <Button onClick={handleSearch} variant="gold" size="lg" className="w-full h-12">
             <Search className="h-4 w-4" />
-            Search
+            Search Rooms
           </Button>
         </div>
       </div>

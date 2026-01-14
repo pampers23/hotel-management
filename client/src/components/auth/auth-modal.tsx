@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { X, Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,6 +58,9 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100">
+        <X className="h-5 w-5" />
+      </DialogClose>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden">
         <div className="luxury-gradient p-6 text-primary-foreground">
           <DialogHeader>
