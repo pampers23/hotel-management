@@ -188,7 +188,7 @@ const SearchWidget = () => {
         <div className="flex items-end">
           <Button onClick={handleSearch} variant="gold" size="lg" className="w-full h-12">
             <Search className="h-4 w-4" />
-            Search Roomssss
+            Search Rooms
           </Button>
         </div>
       </div>
