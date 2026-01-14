@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react';
 import {
   Dialog,
