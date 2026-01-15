@@ -71,7 +71,7 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <div className="flex items-center gap-4">
                   <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="gap-2">
+                    <Button variant="ghost" size="sm" className="gap-2 hover:bg-gold/90 hover:rounded-xl cursor-pointer">
                       <Calendar className="h-4 w-4" />
                       My Bookings
                     </Button>
@@ -80,7 +80,7 @@ const Navbar = () => {
                     <User className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm font-medium">{user?.name?.split(' ')[0]}</span>
                   </div>
-                  <Button className='cursor-pointer' variant="ghost" size="icon" onClick={logout}>
+                  <Button className='cursor-pointer hover:bg-gold/90 hover:rounded-xl' variant="ghost" size="icon" onClick={logout}>
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </div>
