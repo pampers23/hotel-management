@@ -18,9 +18,9 @@ import type { Booking } from "@/types/types"
 
 const statusStyle: Record<Booking['status'], { variant: 'default' | 'secondary' | 'destructive' | 'gold' 
   | 'success' | 'muted' | 'outline'; label: string}> = {
-    confirmed: { variant: 'success', label: 'Confiremd' },
+    confirmed: { variant: 'success', label: 'Confirmed' },
     pending: { variant: 'gold', label: 'Pending' },
-    completed: { variant: 'secondary', label: 'Completed' },
+    completed: { variant: 'success', label: 'Completed' },
     cancelled: { variant: 'destructive', label: 'Cancelled' }
   }
 
@@ -31,7 +31,7 @@ const DashboardPage = () => {
   const { bookings } = useBookingStore();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (!isAuthenticated) {
         navigate('/');
     }
   }, [isAuthenticated, navigate]);
@@ -107,7 +107,7 @@ const DashboardPage = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center text-gold font-heading text-2xl">
-                {user?.email}
+                {user?.name?.charAt(0).toUpperCase()}
               </div>
               <div className="text-primary-foreground">
                 <h1 className="font-heading text-2xl font-bold">Welcome, {user?.name?.split(' ')[0]}!</h1>
@@ -141,12 +141,12 @@ const DashboardPage = () => {
                     { label: 'Profile', icon: User },
                     { label: 'Preferences', icon: Settings },
                   ].map((item) => (
-                    <Button
+                    <button
                       key={item.label}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg text-sm transition-colors ${
+                      className={`cursor-pointer w-full flex items-center justify-between p-3 rounded-lg text-sm transition-colors ${
                         item.active
-                         ? 'bg-primary text-primary-foreground'
-                         : 'hover:bg-muted'
+                         ? 'bg-primary text-primary-foreground font-semibolds'
+                         : 'hover:bg-gray-200'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -154,14 +154,14 @@ const DashboardPage = () => {
                         <span>{item.label}</span>
                       </div>
                       <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    </button>
                   ))}
                 </nav>
               </CardContent>
             </Card>
 
             <Card className="mt-4">
-              <CardContent className="font-semibold mb-2">
+              <CardContent className="p-4">
                 <h3 className="font-semibold mb-2">Member Since</h3>
                 <p className="text-sm text-muted-foreground">
                   {user?.memberSince ? format(user.memberSince, 'MMMM yyyy') : 'N/A'}
@@ -175,10 +175,10 @@ const DashboardPage = () => {
             <Tabs defaultValue="upcoming">
               <div className="flex items-center justify-between mb-6">
                 <TabsList>
-                  <TabsTrigger value="upcoming">
+                  <TabsTrigger value="upcoming" className="cursor-pointer">
                     Upcoming ({upcomingBookings.length})
                   </TabsTrigger>
-                  <TabsTrigger value="past">
+                  <TabsTrigger value="past" className="cursor-pointer">
                     Past ({pastBookings.length})
                   </TabsTrigger>
                 </TabsList>
@@ -212,7 +212,7 @@ const DashboardPage = () => {
                 )}
               </TabsContent>
 
-              <TabsContent value="post" className="space-y-4">
+              <TabsContent value="past" className="space-y-4">
                 {pastBookings.length === 0 ? (
                   <Card>
                     <CardContent className="p-8 text-center">
