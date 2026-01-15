@@ -1,10 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-  overflow-y: scroll;
+/* global.css */
+body[data-scroll-locked] {
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+  overflow: visible !important; /* Allows the page to scroll */
 }
+
+/* Or use a more specific selector */
+html body[data-scroll-locked] {
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+  overflow: visible !important;
+}
+
 
 @theme {
   --color-background: hsl(40 33% 98%);

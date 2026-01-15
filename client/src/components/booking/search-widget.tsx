@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -145,44 +146,53 @@ const SearchWidget = () => {
           </Popover>
         </div>
 
-        {/* guests */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">Guests</Label>
-          <Select value={guests.toString()} onValueChange={(value) => setLocalGuests(parseInt(value))}>
-            <SelectTrigger
-               className="
-                h-12 w-full p-5.5
-                transition-all duration-300
-                hover:border-gold
-                hover:ring-1 hover:ring-gold
-                data-[state=open]:border-gold
-                data-[state=open]:ring-1 data-[state=open]:ring-gold
-                cursor-pointer
-              "
-            >
-              <Users className="mr-2 h-4 w-4 text-muted-foreground" />
-              <SelectValue placeholder="Select guests" />
-            </SelectTrigger>
-            <SelectContent className="cursor-pointer">
+      {/* guests */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-muted-foreground">Guests</Label>
+        <Select
+          value={guests.toString()}
+          onValueChange={(value) => setLocalGuests(parseInt(value))}
+        >
+          <SelectTrigger
+            className={cn(
+              "h-12 w-full p-5.5 flex items-center transition-all duration-300",
+              "hover:border-gold hover:ring-1 hover:ring-gold hover:text-gold",
+              "data-[state=open]:border-gold data-[state=open]:ring-1 data-[state=open]:ring-gold",
+              "cursor-pointer"
+            )}
+          >
+            <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+            <SelectValue placeholder="Select guests" />
+          </SelectTrigger>
+          <SelectContent
+            className={cn(
+              "z-50 rounded-xl border bg-background shadow-lg",
+              "max-h-[15rem] md:max-h-[24rem] overflow-y-auto",
+              "w-full md:w-auto"
+            )}
+          >
+            <SelectGroup>
               {[1, 2, 3, 4, 5, 6].map((num) => (
-                <SelectItem 
-                  key={num} 
+                <SelectItem
+                  key={num}
                   value={num.toString()}
-                  className="
-                    cursor-pointer
-                    transition-colors
-                    focus:bg-gold/20
-                    focus:text-gold
-                    data-[state=checked]:bg-gold
-                    data-[state=checked]:text-black
-                  "
+                  className={cn(
+                    "cursor-pointer transition-colors py-2 px-4",
+                    "hover:bg-gold/20 hover:text-gold",
+                    "focus:bg-gold/20 focus:text-gold",
+                    "pl-4 !pr-4",
+                    "relative"
+                  )}
                 >
-                  {num} Guest{num > 1 ? 's' : ''}
+                  {num} Guest{num > 1 ? "s" : ""}
                 </SelectItem>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+
 
         {/* search button */}
         <div className="flex items-end">
