@@ -179,7 +179,7 @@ const SearchWidget = () => {
                   className={cn(
                     "cursor-pointer transition-colors py-2 px-4",
                     "hover:bg-gold/20 hover:text-gold",
-                    "focus:bg-gold/20 focus:text-gold",
+                    "focus:bg-gold/20 focus:text-gold", 
                     "pl-4 !pr-4",
                     "relative"
                   )}
@@ -192,11 +192,9 @@ const SearchWidget = () => {
         </Select>
       </div>
 
-
-
         {/* search button */}
         <div className="flex items-end">
-          <Button onClick={handleSearch} variant="gold" size="lg" className="w-full h-12">
+          <Button onClick={handleSearch} variant="gold" size="lg" className="cursor-pointer w-full h-12">
             <Search className="h-4 w-4" />
             Search Rooms
           </Button>
