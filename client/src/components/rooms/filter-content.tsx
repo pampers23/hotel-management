@@ -41,7 +41,7 @@ const FilterContent = ({ priceRange, setLocalPriceRange }: FilterContentProps) =
           <h4 className="font-heading text-lg font-semibold">Price Range</h4>
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </CollapsibleTrigger>
-        <CollapsibleContent className="pt-4">
+        <CollapsibleContent className="pt-4 space-y-3 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
           <Slider
             value={priceRange}
             onValueChange={(value) =>
@@ -87,7 +87,7 @@ const FilterContent = ({ priceRange, setLocalPriceRange }: FilterContentProps) =
           <h4 className="font-heading text-lg font-semibold">Amenities</h4>
           <ChevronDown className="h-4 w-4 text-muted-foreground" />
         </CollapsibleTrigger>
-        <CollapsibleContent className="pt-4 space-y-3">
+        <CollapsibleContent className="pt-4 space-y-3 max-h-60 overflow-y-aut">
           {amenitiesList.slice(0, 10).map((amenity) => (
             <label key={amenity} className="flex items-center gap-3 cursor-pointer">
               <Checkbox

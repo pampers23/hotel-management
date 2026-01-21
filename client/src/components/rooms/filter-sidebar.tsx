@@ -36,7 +36,7 @@ const FilterSidebar = () => {
           </Button>
         </SheetTrigger>
 
-        <SheetContent side="left" className="w-80">
+        <SheetContent side="left" className="w-80 h-dvh overflow-y-auto px-4 pb-6">
           <SheetHeader>
             <SheetTitle className="font-heading">Filters</SheetTitle>
           </SheetHeader>
@@ -60,10 +60,12 @@ const FilterSidebar = () => {
     >
       <h3 className="font-heading text-xl font-semibold mb-6">Filters</h3>
 
-      <FilterContent
-        priceRange={priceRange}
-        setLocalPriceRange={setLocalPriceRange}
-      />
+      <div className='mt-6'>
+        <FilterContent
+          priceRange={priceRange}
+          setLocalPriceRange={setLocalPriceRange}
+        />
+      </div>
     </motion.div>
   );
 };
