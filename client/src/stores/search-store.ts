@@ -54,9 +54,9 @@ export const useSearchStore = create<SearchState>()(
                 }));
             },
 
-            setAmenities: (amenties) => {
+            setAmenities: (amenities) => {
                 set((state) => ({
-                    filters: { ...state.filters, amenties },
+                    filters: { ...state.filters, amenities },
                 }));
             },
 
