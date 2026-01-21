@@ -119,40 +119,40 @@ const About = () => {
             className="text-center mb-12"
           >
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">
-              Our Core Values      
+              Our Core Values
             </h2>
             <p className="text-white/70 max-w-2xl mx-auto">
-              The principles that guide everything we do  
+              The principles that guide everything we do
             </p>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-                {
-                    title: 'Excellence',
-                    description: 'We strive for perfection in every detail, ensuring an exceptional experience for our guests.'
-                },
-                {
-                    title: 'Warmth',
-                    description: 'Our genuine hospitality creates a welcoming atmosphere that feels like home.',
-                },
-                {
-                    title: 'Innovation',
-                    description: 'We continuously evolve to exceed expectations while honoring our timeless traditions.',
-                },
-
+              {
+                title: 'Excellence',
+                description: 'We strive for perfection in every detail, ensuring an exceptional experience for our guests.',
+              },
+              {
+                title: 'Warmth',
+                description: 'Our genuine hospitality creates a welcoming atmosphere that feels like home.',
+              },
+              {
+                title: 'Innovation',
+                description: 'We continuously evolve to exceed expectations while honoring our timeless traditions.',
+              },
             ].map((value, index) => (
-                <motion.div
-                  key={value.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileHover={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="text-center p-8 rounded-2xl bg-white/5 border border-white/10"
-                >
-                   <h3 className="font-heading text-xl font-semibold text-gold mb-3">
-                     {value.title}    
-                   </h3> 
-                </motion.div>
+              <motion.div
+                key={value.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="text-center p-8 rounded-2xl bg-white/5 border border-white/10"
+              >
+                <h3 className="font-heading text-xl font-semibold text-gold mb-3">
+                  {value.title}
+                </h3>
+                <p className="text-white/70">{value.description}</p>
+              </motion.div>
             ))}
           </div>
         </div>
