@@ -94,24 +94,24 @@ const RoomsPage = () => {
                   <div className="flex items-center gap-4">
                     {/* sort */}
                     <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="w-40">
-                        <SlidersHorizontal className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Sort by" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="featured">Featured</SelectItem>
-                        <SelectItem value="price-low">Price: Low to High</SelectItem>
-                        <SelectItem value="price-high">Price: High to Low</SelectItem>
-                        <SelectItem value="rating">Highest Rated</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <SelectTrigger className="w-40">
+                      <SlidersHorizontal className="h-4 w-4 mr-2" />
+                      <SelectValue placeholder="Sort by" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white cursor-pointer">
+                      <SelectItem value="featured">Featured</SelectItem>
+                      <SelectItem value="price-low">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high">Price: High to Low</SelectItem>
+                      <SelectItem value="rating">Highest Rated</SelectItem>
+                    </SelectContent>
+                  </Select>
 
                     {/* view mode - desktop only */}
                     <div className="hidden sm:flex items-center border rounded-lg">
                       <Button
                         variant={viewMode === 'grid' ? 'default' : 'ghost'}
                         size="icon"
-                        className="rounded-r-none"
+                        className="rounded-r-none cursor-pointer"
                         onClick={() => setViewMode('grid')}
                       >
                         <Grid className="h-4 w-4" />  
@@ -119,7 +119,7 @@ const RoomsPage = () => {
                       <Button
                         variant={viewMode === 'list' ? 'default' : 'ghost'}
                         size="icon"
-                        className="rounded-l-none"
+                        className="rounded-l-none cursor-pointer"
                         onClick={() => setViewMode('list')}
                       >
                         <List className="h-4 w-4" />

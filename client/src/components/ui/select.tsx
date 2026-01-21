@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -105,14 +105,19 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+      "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      "focus:bg-accent focus:text-accent-foreground",
+      "focus:bg-gold focus:text-accent-foreground",
+      "hover:bg-gray-100", // added hover effect
       className
     )}
     {...props}
   >
-    {/* Removed the ItemIndicator span here */}
+    {/* Re-add ItemIndicator for check */}
+    <SelectPrimitive.ItemIndicator className="absolute left-2 inline-flex items-center">
+      <Check className="h-4 w-4 text-primary" />
+    </SelectPrimitive.ItemIndicator>
+
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
   </SelectPrimitive.Item>
 ));
