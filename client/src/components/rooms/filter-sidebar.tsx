@@ -56,7 +56,7 @@ const FilterSidebar = () => {
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      className="w-72 bg-card rounded-xl border p-6 sticky top-24"
+      className="w-72 shrink-0 bg-card rounded-xl border p-6 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20"
     >
       <h3 className="font-heading text-xl font-semibold mb-6">Filters</h3>
 
