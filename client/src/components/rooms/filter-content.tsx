@@ -100,6 +100,8 @@ const FilterContent = ({ priceRange, setLocalPriceRange }: FilterContentProps) =
         </CollapsibleContent>
       </Collapsible>
 
+      <div className="pt-12"/>
+
       {/* Reset Button */}
       <Button variant="outline" className="w-full" onClick={resetFilters}>
         <X className="h-4 w-4 mr-2" />
