@@ -155,7 +155,7 @@ const RoomsPage = () => {
                     <p className="text-muted-foreground mb-6">
                       Try adjusting your filters to see more options.
                     </p>
-                    <Button variant="outline" onClick={() => window.location.reload()}>
+                    <Button className="cursor-pointer" variant="outline" onClick={() => window.location.reload()}>
                       Reset Filters
                     </Button>
                    </div>
