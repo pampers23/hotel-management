@@ -211,11 +211,15 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
           className="space-y-3 pt-4 border-t"
         >
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">${room.price} x {nights} nights</span>
+            <span className="text-muted-foreground">${room.price} × {nights} nights</span>
             <span>${subtotal}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foregrounf">Service fee</span>
+            <span className="text-muted-foreground">Taxes & fees</span>
+            <span>${taxes}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Service fee</span>
             <span>${serviceFee}</span>
           </div>
           <div className="flex justify-between font-semibold pt-3 border-t">
