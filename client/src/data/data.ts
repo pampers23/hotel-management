@@ -153,7 +153,7 @@ export const mockBookings: Booking[] = [
 export const mockUser: User = {
   id: 'U001',
   email: 'guest@luxuryhotel.com',
-  name: 'Alexandra Chen',
+  name: 'Lance Brixter Mendoza',
   phone: '+1 (555) 123-4567',
   memberSince: new Date('2023-06-15'),
 };
