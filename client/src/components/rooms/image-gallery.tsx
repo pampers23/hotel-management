@@ -124,6 +124,7 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
                 className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
                 onClick={goToNext}
               >
+                adasda
                 <ChevronRight className="h-5 w-5" />
               </Button>
             </motion.div>
