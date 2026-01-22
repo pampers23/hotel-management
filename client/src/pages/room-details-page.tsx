@@ -154,9 +154,9 @@ const RoomDetailsPage = () => {
               {/* tabs */}
               <Tabs defaultValue="amenities" className="mb-8">
                 <TabsList className="w-full justify-start">
-                  <TabsTrigger value="amenities">Amenities</TabsTrigger>
-                  <TabsTrigger value="policies">Policies</TabsTrigger>
-                  <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                  <TabsTrigger className="cursor-pointer" value="amenities">Amenities</TabsTrigger>
+                  <TabsTrigger className="cursor-pointer" value="policies">Policies</TabsTrigger>
+                  <TabsTrigger className="cursor-pointer" value="reviews">Reviews</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="amenities" className="pt-6">

@@ -13,6 +13,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { useBookingStore } from "@/stores/booking-store";
@@ -80,7 +81,7 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
               <Button
                 variant='outline'
                 className={cn(
-                  "w-full justify-start text-left font-normal mt-1",
+                  "w-full justify-start text-left font-normal mt-1 cursor-pointer",
                   !dateRange.from && "text-muted-foreground"
                 )}
               >
@@ -95,7 +96,19 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
                 onSelect={(date) => setDateRange((prev) => ({ ...prev, from: date }))}
                 disabled={(date) => date < new Date()}
                 initialFocus
-                className="pointer-events-auto"
+                classNames={{
+                  day: "relative p-0",
+                  day_button: `
+                    h-9 w-9 rounded-md
+                    cursor-pointer
+                    transition-colors
+                    hover:bg-gold/20 hover:text-gold
+                    focus:bg-gold/20 focus:text-gold
+                    aria-selected:bg-gold
+                    aria-selected:text-black
+                  `,
+                  day_today: "border border-gold",
+                }}
               />
             </PopoverContent>
           </Popover>
@@ -108,7 +121,7 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
               <Button
                variant='outline'
                className={cn(
-                "w-full justify-start text-left font-normal mt-1",
+                "w-full justify-start text-left font-normal mt-1 cursor-pointer",
                 !dateRange.to && "text-muted-foreground"
                )}
               >
@@ -123,7 +136,19 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
                 onSelect={(date) => setDateRange((prev) => ({ ...prev, to: date }))}
                 disabled={(date) => date < (dateRange.from || new Date())}
                 initialFocus
-                className="pointer-event-auto"
+                classNames={{
+                  day: "relative p-0",
+                  day_button: `
+                    h-9 w-9 rounded-md
+                    cursor-pointer
+                    transition-colors
+                    hover:bg-gold/20 hover:text-gold
+                    focus:bg-gold/20 focus:text-gold
+                    aria-selected:bg-gold
+                    aria-selected:text-black
+                  `,
+                  day_today: "border border-gold",
+                }}
               />
             </PopoverContent>
           </Popover>
@@ -132,15 +157,35 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
 
       {/* guest */}
       <div className="mb-6">
-        <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Guests</Label>
+        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Guests</label>
         <Select value={guests.toString()} onValueChange={(value) => setGuests(parseInt(value))}>
-          <SelectTrigger className="mt-1">
+          <SelectTrigger className={cn(
+              "h-w-full flex items-center transition-all duration-300",
+              "hover:border-gold hover:ring-1 hover:ring-gold hover:text-gold",
+              "data-[state=open]:border-gold data-[state=open]:ring-1 data-[state=open]:ring-gold",
+              "cursor-pointer"
+            )}>
             <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+            <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent
+            className={cn(
+              "z-50 rounded-xl border bg-background shadow-lg",
+              "max-h-[15rem] md:max-h-[24rem] overflow-y-auto",
+              "w-full md:w-auto"
+            )}
+          >
             {Array.from({ length: room.capacity }, (_, i) => i + 1).map((num) => (
-              <SelectItem key={num} value={num.toString()}>
-                {num} {num === 1 ? "Guest" : "Guests"}
+              <SelectItem
+               className={cn(
+                    "cursor-pointer transition-colors py-2 px-4",
+                    "hover:bg-gold/20 hover:text-gold",
+                    "focus:bg-gold/20 focus:text-gold", 
+                    "pl-4 !pr-4",
+                    "relative"
+                  )} 
+               key={num} value={num.toString()}>
+                {num} {num === 1 ? 'Guest' : 'Guests'}
               </SelectItem>
             ))}
           </SelectContent>
@@ -151,7 +196,7 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
       <Button
         variant="gold"
         size="lg"
-        className="w-full mb-4"
+        className="w-full mb-4 cursor-pointer"
         disabled={!isBookingReady}
         onClick={handleBooking}
       >
