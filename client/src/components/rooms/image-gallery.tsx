@@ -42,7 +42,7 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background shadow-md"
+            className="cursor-pointer absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background shadow-md"
             onClick={(e) => {
               e.stopPropagation();
               goToPrevious();
@@ -53,7 +53,7 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background shadow-md"
+            className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background shadow-md"
             onClick={(e) => {
               e.stopPropagation();
               goToNext();
@@ -113,7 +113,7 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
+                className="cursor-pointer absolute left-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
                 onClick={goToPrevious}
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -121,7 +121,7 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
+                className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
                 onClick={goToNext}
               >
                 <ChevronRight className="h-5 w-5" />
