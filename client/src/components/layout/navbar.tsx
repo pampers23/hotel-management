@@ -86,7 +86,7 @@ const Navbar = () => {
                 </div>
               ) : (
                 <>
-                  <Button className='cursor-pointer' variant="ghost" onClick={() => handleAuthClick('login')}>
+                  <Button className='cursor-pointer' variant="ghost" onClick={() => navigate('/login')}>
                     Sign In
                   </Button>
                   <Button className='cursor-pointer' variant="gold" onClick={() => handleAuthClick('register')}>
