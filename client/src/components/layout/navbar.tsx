@@ -4,12 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/stores/auth-store';
-import AuthModal from '@/components/auth/auth-modal';
+// import AuthModal from '@/components/auth/auth-modal';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  // const [showAuthModal, setShowAuthModal] = useState(false);
+  // const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuthStore();
 
@@ -22,11 +24,11 @@ const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const handleAuthClick = (mode: 'login' | 'register') => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
-    setIsOpen(false);
-  };
+  // const handleAuthClick = (mode: 'login' | 'register') => {
+  //   setAuthMode(mode);
+  //   setShowAuthModal(true);
+  //   setIsOpen(false);
+  // };
 
   return (
     <>
@@ -89,7 +91,7 @@ const Navbar = () => {
                   <Button className='cursor-pointer' variant="ghost" onClick={() => navigate('/login')}>
                     Sign In
                   </Button>
-                  <Button className='cursor-pointer' variant="gold" onClick={() => handleAuthClick('register')}>
+                  <Button className='cursor-pointer' variant="gold" onClick={() => navigate('/register')}>
                     Book Now
                   </Button>
                 </>
@@ -145,14 +147,14 @@ const Navbar = () => {
                       <Button
                         variant="outline"
                         className="w-full"
-                        onClick={() => handleAuthClick('login')}
+                        onClick={() => navigate('/login')}
                       >
                         Sign In
                       </Button>
                       <Button
                         variant="gold"
                         className="w-full"
-                        onClick={() => handleAuthClick('register')}
+                        onClick={() => navigate('/register')}
                       >
                         Book Now
                       </Button>
@@ -165,11 +167,11 @@ const Navbar = () => {
         </AnimatePresence>
       </nav>
 
-      <AuthModal
+      {/* <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         initialMode={authMode}
-      />
+      /> */}
     </>
   );
 };

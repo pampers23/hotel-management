@@ -1,3 +1,5 @@
+"use client"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,16 +11,58 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { handleRegister, validatePassword } from "@/utils/auth"
+import { useState } from "react"
+import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  }
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // validate before submitting
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      console.error('Password validation failed:', passwordValidation.message);
+      toast.error(passwordValidation.message);
+      return;
+    }
+
+    await handleRegister(
+      formData.name,
+      formData.email,
+      formData.password,
+      () => {
+        // on success callback
+        console.log('Registration successful');
+        navigate('/index');
+      }
+    )
+  }
+
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden p-0">
+      <Card className="overflow-hidden p-0 bg-white">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form onSubmit={onSubmit} className="p-6 md:p-8">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account</h1>
@@ -33,23 +77,33 @@ export function SignupForm({
                   type="email"
                   placeholder="m@example.com"
                   required
+                  value={formData.email}
+                  onChange={handleChange}
                 />
-                <FieldDescription>
-                  We&apos;ll use this to contact you. We will not share your
-                  email with anyone else.
-                </FieldDescription>
               </Field>
               <Field>
-                <Field className="grid grid-cols-2 gap-4">
+                <Field className="flex flex-col gap-4">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      required
+                      value={formData.password}
+                      onChange={handleChange}
+                    />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
                       Confirm Password
                     </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
+                    <Input 
+                      id="confirm-password" 
+                      type="password" 
+                      required
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                    />
                   </Field>
                 </Field>
                 <FieldDescription>
