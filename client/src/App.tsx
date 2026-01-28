@@ -13,6 +13,7 @@ import About from "./pages/about";
 import Contact from "./pages/contact";
 import Login from "./pages/login";
 import SignUp from "./pages/signup";
+import ForgotPassword from "./pages/forgot-password";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
