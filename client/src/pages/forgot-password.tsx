@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { Link } from "react-router-dom"
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("")
@@ -60,7 +61,9 @@ const ForgotPassword = () => {
           {/* Footer */}
           <div className="mt-4 text-center text-sm">
             <span className="cursor-pointer hover:underline text-primary" >
-              Back to login
+              <Link to={"/login"}>
+                Back to login
+              </Link>
             </span>
           </div>
 
