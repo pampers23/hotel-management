@@ -16,6 +16,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 import authImage from "@/assets/download.jpg"
+import { Eye, EyeOff } from "lucide-react"
+
 
 export function SignupForm({
   className,
@@ -23,6 +25,8 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
   
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -30,10 +34,10 @@ export function SignupForm({
     confirmPassword: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
-  }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { id, value } = e.target;
+      setFormData((prev) => ({ ...prev, [id]: value }));
+    }
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,25 +90,59 @@ export function SignupForm({
                 <Field className="gap-4">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input 
-                      id="password" 
-                      type="password" 
-                      required
-                      value={formData.password}
-                      onChange={handleChange}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="pr-10"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className=" cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                    </button>
+                  </div>
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
                       Confirm Password
                     </FieldLabel>
-                    <Input 
-                      id="confirm-password" 
-                      type="password" 
-                      required
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        required
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                        className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label={
+                          showConfirmPassword ? "Hide confirm password" : "Show confirm password"
+                        }
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </Field>
                 </Field>
                 <FieldDescription>
