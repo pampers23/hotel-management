@@ -11,7 +11,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { handleRegister, validatePassword } from "@/utils/auth"
+import { SignUp, validatePassword } from "@/utils/auth"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
@@ -33,6 +33,7 @@ export function SignupForm({
     password: '',
     confirmPassword: '',
   });
+  const signUpMutation = SignUp();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { id, value } = e.target;
@@ -50,14 +51,25 @@ export function SignupForm({
       return;
     }
 
-    await handleRegister(
-      formData.name,
-      formData.email,
-      formData.password,
-      () => {
-        // on success callback
-        console.log('Registration successful');
-        navigate('/index');
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    signUpMutation.mutate(
+      {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Account created successfully! Please verify your email.')
+          navigate('/');
+        },
+        onError: (error) => {
+          toast.error(error.message || 'Registration failed')
+        }
       }
     )
   }
@@ -75,6 +87,17 @@ export function SignupForm({
                   Enter your email below to create your account
                 </p>
               </div>
+              <Field>
+                <FieldLabel htmlFor="name">Name</FieldLabel>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </Field>
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
@@ -150,7 +173,12 @@ export function SignupForm({
                 </FieldDescription>
               </Field>
               <Field>
-                <Button className="bg-gold cursor-pointer hover:bg-orange-400" type="submit">Create Account</Button>
+                <Button 
+                  disabled={signUpMutation.isPending} 
+                  className="bg-gold cursor-pointer hover:bg-orange-400" 
+                  type="submit">
+                    {signUpMutation.isPending ? 'Creating Account...' : 'Create Account'}
+                  </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
@@ -176,7 +204,7 @@ export function SignupForm({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                Already have an account? <a href="/login">Sign in</a>
+                Already have an account? <a href="/auth/login">Sign in</a>
               </FieldDescription>
             </FieldGroup>
           </form>

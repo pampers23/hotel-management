@@ -37,7 +37,7 @@ export function LoginForm({
   }
 
   const result = await handleLogin(email, password, () => {
-    navigte('/index');
+    navigte('/dashboard');
   });
 
   if (!result.success) {
