@@ -24,32 +24,25 @@ export async function signUp(c: Context) {
   return c.json({ message: 'Sign up successful, please verify your email', user: data.user }, 201)
 }
 
-// sign in/login
+// sign in
 export async function signIn(c: Context) {
-   const { email, password } = await c.req.json();
+  const { email, password } = await c.req.json()
 
-   if (!email || !password) throw new BadRequestError('Missing required fields');
+  if (!email || !password) throw new BadRequestError('Missing required fields')
 
-   const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-   });
+  const { data, error } = await supabaseAnon.auth.signInWithPassword({ email, password })
 
-   if (error) {
-      console.error("Supabase Auth Error:", error.message);
-      throw new UnauthorizedError("Invalid credentials");
-   };
+  if (error) throw new UnauthorizedError('Invalid credentials')
+  if (!data.user || !data.session) throw new UnauthorizedError('User not found')
 
-   if (!data.user) throw new UnauthorizedError("User not found");
-
-   return c.json({
-    message: "Sign in successful",
+  return c.json({
+    message: 'Sign in successful',
     user: {
       id: data.user.id,
       email: data.user.email,
       name: data.user.user_metadata?.name,
-      role: data.user.user_metadata?.role || "customer",
+      role: data.user.user_metadata?.role || 'customer',
     },
-    session: data.session,
-  });
+    session: data.session, // contains access_token + refresh_token
+  })
 }
