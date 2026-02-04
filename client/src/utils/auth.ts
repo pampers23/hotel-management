@@ -1,6 +1,8 @@
 // auth-functions.ts
 import { useAuthStore } from "@/stores/auth-store";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query"
+
 
 /**
  * Handle user login
@@ -56,45 +58,31 @@ export const handleLogin = async (
  * @param onSuccess - Optional callback function to execute on successful registration
  * @returns Promise with success status and optional error message
  */
-export const handleRegister = async (
-  name: string,
-  email: string,
-  password: string,
-  onSuccess?: () => void
-): Promise<{ success: boolean; error?: string }> => {
-  const { register } = useAuthStore.getState();
-
-  try {
-    const result = await register(name, email, password);
-
-    if (result.success) {
-      toast.success('Account created successfully!', {
-        id: 'auth-register-success',
-      });
-
-      // Execute callback if provided
-      if (onSuccess) {
-        onSuccess();
+export function SignUp() {
+  return useMutation({
+    mutationFn: async ({
+      name,
+      email,
+      password,
+    }: {
+      name: string
+      email: string
+      password: string
+    }) => {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text || 'Registration failed')
       }
+      return res.json()
+    },
+  })
+}
 
-      return { success: true };
-    } else {
-      toast.error(result.error || 'Registration failed', {
-        id: 'auth-register-error',
-      });
-
-      return { success: false, error: result.error };
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-    
-    toast.error(errorMessage, {
-      id: 'auth-register-error',
-    });
-
-    return { success: false, error: errorMessage };
-  }
-};
 
 /**
  * Validate email format
@@ -147,7 +135,7 @@ export const useAuth = () => {
 
   return {
     login: handleLogin,
-    register: handleRegister,
+    register: SignUp,
     googleLogin: handleGoogleLogin,
     validateEmail,
     validatePassword,

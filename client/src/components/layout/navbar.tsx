@@ -91,7 +91,7 @@ const Navbar = () => {
                   <Button className='cursor-pointer' variant="ghost" onClick={() => navigate('/login')}>
                     Sign In
                   </Button>
-                  <Button className='cursor-pointer' variant="gold" onClick={() => navigate('/register')}>
+                  <Button className='cursor-pointer' variant="gold" onClick={() => navigate('/sign-up')}>
                     Book Now
                   </Button>
                 </>
