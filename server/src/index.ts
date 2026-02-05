@@ -1,33 +1,32 @@
-import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
-import 'dotenv/config'
-import { errorHandlerMiddleware } from './middlewares/error-handle'
-import { routes } from './routes/routes';
-import { cors } from 'hono/cors';
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import { errorHandlerMiddleware } from "./middlewares/error-handle";
+import { routes } from "./routes/routes";
 
-const app = new Hono()
+const app = new Hono();
 
-// cors (allow vite dev server)
 app.use(
-  '*',
+  "*",
   cors({
-    origin: ['http://localhost:5173', "https://lumie-re-hotel.vercel.app"],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    // allow local + your production site + previews
+    origin: (origin) =>
+      !origin ||
+      origin === "http://localhost:5173" ||
+      origin === "https://lumie-re-hotel.vercel.app" ||
+      origin.endsWith(".vercel.app"),
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
   })
-)
+);
 
-// handle error
 app.onError(errorHandlerMiddleware);
 
-// routes
+// mount your auth routes at /auth/...
 routes.forEach((route) => {
-  app.route('/auth', route);
-})
+  app.route("/auth", route);
+});
 
-serve({
-  fetch: app.fetch,
-  port: 3000
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
-})
+// quick health check
+app.get("/health", (c) => c.text("ok"));
+
+export default app;
