@@ -15,6 +15,7 @@ import React, { useState } from "react"
 import { toast } from "sonner"
 import authImage from "@/assets/download.jpg"
 import { Eye, EyeOff } from "lucide-react"
+import { useAuthStore } from "@/stores/auth-store"
 
 
 export function LoginForm({
@@ -26,25 +27,27 @@ export function LoginForm({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false)
+  const isLoading = useAuthStore((state) => state.isLoading);
+  console.log('render isLoading:', isLoading)
 
 
   const onSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!validateEmail(email)) {
-    toast.error("Please enter a valid email address");
-    return;
-  }
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
 
-  const result = await handleLogin(email, password, () => {
-    navigte('/dashboard');
-  });
+    const result = await handleLogin(email, password, () => {
+      navigte('/dashboard');
+    });
 
-  if (!result.success) {
-    console.error('Login failed:', result.error);
-    toast.error(result.error || 'Login failed');
-  }
-};
+    if (!result.success) {
+      console.error('Login failed:', result.error);
+      toast.error(result.error || 'Login failed');
+    }
+  };
 
 
 
@@ -107,7 +110,14 @@ export function LoginForm({
                 </div>
               </Field>
               <Field>
-                <Button className="bg-gold cursor-pointer hover:bg-orange-400" type="submit">Login</Button>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="bg-gold hover:bg-orange-400 disabled:opacity-60 cursor-pointer w-full"
+                >
+                  {isLoading ? 'Logging in...' : 'Login'}
+                </Button>
+
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with

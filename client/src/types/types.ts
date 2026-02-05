@@ -1,10 +1,10 @@
 export type User = {
-    id: string;
-    email: string;
-    name: string;
-    avatar?: string;
-    phone?: string;
-    memberSince: Date;
+  id: string
+  email: string
+  name: string
+  avatar?: string
+  phone?: string
+  memberSince: Date
 }
 
 export type Booking = {
