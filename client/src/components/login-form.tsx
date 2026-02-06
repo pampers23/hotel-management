@@ -36,13 +36,13 @@ export function LoginForm({
     return;
   }
 
-  const result = await handleLogin(email, password, () => {
-    navigte('/dashboard');
-  });
+  const { success, error } = await handleLogin(email, password);
 
-  if (!result.success) {
-    console.error('Login failed:', result.error);
-    toast.error(result.error || 'Login failed');
+  if (success) {
+    toast.success("Login successful!");
+    navigte("/dashboard");
+  } else {
+    toast.error(error || "Login failed. Please try again.");
   }
 };
 
