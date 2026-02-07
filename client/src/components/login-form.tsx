@@ -44,6 +44,7 @@ export function LoginForm({
   })
 
   function onSubmit(values: LoginSchema) {
+    console.log("SUBMIT VALUES", values);
     mutate(values);
   }
 
