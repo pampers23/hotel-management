@@ -25,7 +25,7 @@ export async function signUp(c: Context) {
 }
 
 // sign in
-export async function signIn(c: Context) {
+export async function login(c: Context) {
   const { email, password } = await c.req.json()
 
   if (!email || !password) throw new BadRequestError('Missing required fields')

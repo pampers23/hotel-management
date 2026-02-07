@@ -11,44 +11,29 @@ import { useMutation } from "@tanstack/react-query"
  * @param onSuccess - Optional callback function to execute on successful login
  * @returns Promise with success status and optional error message
  */
-export const handleLogin = async (
-  email: string,
-  password: string,
-  onSuccess?: () => void
-): Promise<{ success: boolean; error?: string }> => {
-  const { login } = useAuthStore.getState();
+export async function handleLogin(email: string, password: string) {
+  const baseUrl = import.meta.env.VITE_API_URL; // e.g. https://lumie-re-hotel.vercel.app/api
 
-  try {
-    const result = await login(email, password);
+  const res = await fetch(`${baseUrl}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
 
-    if (result.success) {
-      toast.success('Welcome back!', {
-        id: 'auth-login-success',
-      });
-      
-      // Execute callback if provided
-      if (onSuccess) {
-        onSuccess();
-      }
+  const data = await res.json();
 
-      return { success: true };
-    } else {
-      toast.error(result.error || 'Login failed', {
-        id: 'auth-login-error',
-      });
-
-      return { success: false, error: result.error };
-    }
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-    
-    toast.error(errorMessage, {
-      id: 'auth-login-error',
-    });
-
-    return { success: false, error: errorMessage };
+  if (!res.ok) {
+    return { success: false, error: data?.error ?? "Login failed" };
   }
-};
+
+  // IMPORTANT: store session
+  localStorage.setItem("sb_access_token", data.session.access_token);
+  localStorage.setItem("sb_refresh_token", data.session.refresh_token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+
+  return { success: true, data };
+}
+
 
 /**
  * Handle user registration
