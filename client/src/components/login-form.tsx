@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import React, {  } from "react"
-// import { toast } from "sonner"
+import { zodResolver } from "@hookform/resolvers/zod";
 import authImage from "@/assets/download.jpg"
 import { Eye, EyeOff } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
 import { userLogin } from "@/actions/auth"
 import { useForm } from "react-hook-form"
-import type { LoginSchema } from "@/zod-schema"
+import { loginSchema, type LoginSchema } from "@/zod-schema"
 import { toast } from "sonner"
 import { useNavigate } from "react-router-dom"
 
@@ -31,12 +31,14 @@ export function LoginForm({
   const { mutate, isPending } = useMutation({
     mutationFn: userLogin,
     onSuccess: () => navigate("/dashboard"),
-    onError: (e) => toast.error("Login Failed", {
-      description: (e as Error).message,
-    }),
+    onError: (err) => {
+  console.error("LOGIN ERROR:", err);
+  toast.error("Login Failed", { description: err.message });
+}
   })
 
   const form = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -70,7 +72,7 @@ export function LoginForm({
                   placeholder="m@example.com"
                   required
                   disabled={isPending}
-                  {...form.register("email")}
+                  {...form.register("email", { required: true })}
                 />
               </Field>
               <Field>
@@ -90,7 +92,7 @@ export function LoginForm({
                     type={showPassword ? "text" : "password"}
                     required
                     disabled={isPending}
-                    {...form.register("password")}
+                    {...form.register("password", { required: true })}
                     className="pr-10"
                   />
 
