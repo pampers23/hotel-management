@@ -1,5 +1,6 @@
 import 'dotenv/config'
 
+import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { errorHandlerMiddleware } from './middlewares/error-handle'
 import { routes } from './routes/routes'
@@ -7,6 +8,7 @@ import { cors } from 'hono/cors'
 
 const app = new Hono()
 
+// ✅ CORS MUST be first
 app.use(
   "*",
   cors({
@@ -17,19 +19,19 @@ app.use(
   })
 );
 
-app.options('*', (c) => c.body(null, 204))
-
 app.onError(errorHandlerMiddleware)
 
 routes.forEach((route) => {
   app.route('/auth', route)
 })
 
-routes.forEach((route) => {
-  app.route("/auth", route);
-});
+app.get('/health', (c) => c.text('ok'))
 
-app.get("/health", (c) => c.text("ok"));
-
-export default app;
+serve(
+  {
+    fetch: app.fetch,
+    port: Number(process.env.PORT ?? 3000),
+  },
+  (info) => console.log(`Server running on http://localhost:${info.port}`)
+)
 
