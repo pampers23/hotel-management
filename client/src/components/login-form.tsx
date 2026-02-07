@@ -9,45 +9,43 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { handleLogin, validateEmail } from "@/utils/auth"
-import { useNavigate } from "react-router-dom"
-import React, { useState } from "react"
-import { toast } from "sonner"
+import React, {  } from "react"
+// import { toast } from "sonner"
 import authImage from "@/assets/download.jpg"
 import { Eye, EyeOff } from "lucide-react"
-import { useAuthStore } from "@/stores/auth-store"
+import { useMutation } from "@tanstack/react-query"
+import { userLogin } from "@/actions/auth"
+import { useForm } from "react-hook-form"
+import type { LoginSchema } from "@/zod-schema"
+import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  
-  const navigte = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false)
-  const isLoading = useAuthStore((state) => state.isLoading);
-  console.log('render isLoading:', isLoading)
 
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = React.useState(false)
+  const { mutate, isPending } = useMutation({
+    mutationFn: userLogin,
+    onSuccess: () => navigate("/dashboard"),
+    onError: (e) => toast.error("Login Failed", {
+      description: (e as Error).message,
+    }),
+  })
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateEmail(email)) {
-      toast.error("Please enter a valid email address");
-      return;
+  const form = useForm<LoginSchema>({
+    defaultValues: {
+      email: "",
+      password: "",
     }
+  })
 
-  const { success, error } = await handleLogin(email, password);
-
-  if (success) {
-    toast.success("Login successful!");
-    navigte("/dashboard");
-  } else {
-    toast.error(error || "Login failed. Please try again.");
+  function onSubmit(values: LoginSchema) {
+    mutate(values);
   }
-};
 
 
 
@@ -55,7 +53,7 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0 bg-white">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form onSubmit={onSubmit} className="p-6 md:p-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -70,8 +68,8 @@ export function LoginForm({
                   type="email"
                   placeholder="m@example.com"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isPending}
+                  {...form.register("email")}
                 />
               </Field>
               <Field>
@@ -90,8 +88,8 @@ export function LoginForm({
                     id="password"
                     type={showPassword ? "text" : "password"}
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isPending}
+                    {...form.register("password")}
                     className="pr-10"
                   />
 
@@ -112,10 +110,10 @@ export function LoginForm({
               <Field>
                 <Button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isPending}
                   className="bg-gold hover:bg-orange-400 disabled:opacity-60 cursor-pointer w-full"
                 >
-                  {isLoading ? 'Logging in...' : 'Login'}
+                  {isPending ? 'Logging in...' : 'Login'}
                 </Button>
 
               </Field>
