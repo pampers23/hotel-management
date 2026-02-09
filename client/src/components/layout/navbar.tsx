@@ -3,17 +3,39 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/stores/auth-store';
+// import { useAuthStore } from '@/stores/auth-store';
 // import AuthModal from '@/components/auth/auth-modal';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getSession, getUserName } from '@/actions/private';
+import { userLogout } from '@/actions/auth';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  // const [showAuthModal, setShowAuthModal] = useState(false);
-  // const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, user, logout } = useAuthStore();
+  
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+  })
+
+  const isLoggedIn = !!session
+
+  const handleLogout = async () => {
+    console.log("User logged out!");
+    await userLogout();
+    navigate('/index');
+  }
+
+
+  const { data: user, isPending } = useQuery({
+    queryKey: ['userName'],
+    queryFn: getUserName,
+    enabled: isLoggedIn,
+  })
+
+  if (isPending) return <p>Loading...</p>;
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -23,12 +45,6 @@ const Navbar = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
-
-  // const handleAuthClick = (mode: 'login' | 'register') => {
-  //   setAuthMode(mode);
-  //   setShowAuthModal(true);
-  //   setIsOpen(false);
-  // };
 
   return (
     <>
@@ -70,7 +86,7 @@ const Navbar = () => {
 
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center gap-4">
-              {isAuthenticated ? (
+              {isLoggedIn ? (
                 <div className="flex items-center gap-4">
                   <Link to="/dashboard">
                     <Button variant="ghost" size="sm" className="gap-2 hover:bg-gold/90 hover:rounded-xl cursor-pointer">
@@ -78,11 +94,11 @@ const Navbar = () => {
                       My Bookings
                     </Button>
                   </Link>
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
-                    <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{user?.name?.split(' ')[0]}</span>
-                  </div>
-                  <Button className='cursor-pointer hover:bg-gold/90 hover:rounded-xl' variant="ghost" size="icon" onClick={logout}>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">{(user ?? "Guest").split(" ")[0]}</span>
+                    </div>
+                  <Button className='cursor-pointer hover:bg-gold/90 hover:rounded-xl' variant="ghost" size="icon" onClick={handleLogout}>
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </div>
@@ -131,14 +147,14 @@ const Navbar = () => {
                   </Link>
                 ))}
                 <div className="pt-4 border-t border-border space-y-3">
-                  {isAuthenticated ? (
+                  {isLoggedIn ? (
                     <>
                       <Link to="/dashboard" onClick={() => setIsOpen(false)}>
                         <Button variant="outline" className="w-full">
                           My Bookings
                         </Button>
                       </Link>
-                      <Button variant="ghost" className="w-full" onClick={logout}>
+                      <Button variant="ghost" className="w-full" onClick={handleLogout}>
                         Sign Out
                       </Button>
                     </>
