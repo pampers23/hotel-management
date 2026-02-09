@@ -14,8 +14,11 @@ export async function userSignUp({ name, email, password }: SignUpSchema) {
         email,
         password,
       })  
-
-      if (error) throw new Error(error.message);
+      
+      if (error?.message.includes("User already registered")) {
+        toast.error("This email is already registered. Please log in instead.");
+        return;
+      }
 
       toast.success("Email verification has been sent!", {
         description: "Please check your email to confirm your account",
@@ -47,5 +50,18 @@ export async function userLogin({ email, password }: LoginSchema) {
         toast.error("Login Failed", {
           description: err.message,
         });
+    }
+}
+
+export async function userLogout() {
+    try {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            throw new Error(error.message)
+        }
+    } catch (error) {
+        const err = error as AuthError;
+        toast.error(err.message)
     }
 }
