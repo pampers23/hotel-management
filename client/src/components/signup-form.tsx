@@ -11,12 +11,14 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { SignUp, validatePassword } from "@/utils/auth"
+import { validatePassword } from "@/utils/auth"
 import { useState } from "react"
 import { toast } from "sonner"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import authImage from "@/assets/download.jpg"
 import { Eye, EyeOff } from "lucide-react"
+import { useMutation } from "@tanstack/react-query"
+import { userSignUp } from "@/actions/auth"
 
 
 export function SignupForm({
@@ -33,17 +35,30 @@ export function SignupForm({
     password: '',
     confirmPassword: '',
   });
-  const signUpMutation = SignUp();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { id, value } = e.target;
-      setFormData((prev) => ({ ...prev, [id]: value }));
+  const signUpMutation = useMutation({
+    mutationFn: userSignUp,
+    onSuccess: () => {
+       toast.success("Account created!", {
+        description: "Please check your email to verify your account.",
+      })
+      navigate("/")
+    },
+    onError: (error) => {
+      toast.error("Sign Up Failed", {
+        description: error.message,
+      })
     }
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  }
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // validate before submitting
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
       console.error('Password validation failed:', passwordValidation.message);
@@ -56,22 +71,12 @@ export function SignupForm({
       return;
     }
 
-    signUpMutation.mutate(
-      {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      },
-      {
-        onSuccess: () => {
-          toast.success('Account created successfully! Please verify your email.')
-          navigate('/');
-        },
-        onError: (error) => {
-          toast.error(error.message || 'Registration failed')
-        }
-      }
-    )
+    signUpMutation.mutate({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword
+    })
   }
 
 
@@ -204,7 +209,7 @@ export function SignupForm({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                Already have an account? <a href="/auth/login">Sign in</a>
+                Already have an account? <Link to="/login">Sign in</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
