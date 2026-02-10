@@ -29,13 +29,11 @@ const Navbar = () => {
   }
 
 
-  const { data: user, isPending } = useQuery({
-    queryKey: ['userName'],
-    queryFn: getUserName,
-    enabled: isLoggedIn,
-  })
-
-  if (isPending) return <p>Loading...</p>;
+    const { data: user, isPending } = useQuery({
+      queryKey: ['userName'],
+      queryFn: getUserName,
+      enabled: isLoggedIn,
+    })
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -96,7 +94,13 @@ const Navbar = () => {
                   </Link>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
                       <User className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">{(user ?? "Guest").split(" ")[0]}</span>
+                      <span className="text-sm font-medium">
+                        {isPending ? (
+                          <span className="inline-block h-3 w-16 rounded bg-muted-foreground/30 animate-pulse" />
+                            ) : (
+                              (user ?? "Guest").split(" ")[0]
+                            )}
+                          </span>
                     </div>
                   <Button className='cursor-pointer hover:bg-gold/90 hover:rounded-xl' variant="ghost" size="icon" onClick={handleLogout}>
                     <LogOut className="h-4 w-4" />
