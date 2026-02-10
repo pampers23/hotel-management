@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 // import AuthModal from '@/components/auth/auth-modal';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getSession, getUserName } from '@/actions/private';
+import { getAuthUser, getUserName } from '@/actions/private';
 import { userLogout } from '@/actions/auth';
 
 const Navbar = () => {
@@ -17,7 +17,7 @@ const Navbar = () => {
   
   const { data: session } = useQuery({
     queryKey: ["session"],
-    queryFn: getSession,
+    queryFn: getAuthUser,
   })
 
   const isLoggedIn = !!session
