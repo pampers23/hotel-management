@@ -3,37 +3,36 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-// import { useAuthStore } from '@/stores/auth-store';
-// import AuthModal from '@/components/auth/auth-modal';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getAuthUser, getUserName } from '@/actions/private';
+import { getUserName } from '@/actions/private';
 import { userLogout } from '@/actions/auth';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const { data: session } = useQuery({
-    queryKey: ["session"],
-    queryFn: getAuthUser,
+
+  const {
+    data: userName,
+    isPending,
+    refetch,
+  } = useQuery({
+    queryKey: ["userName"],
+    queryFn: getUserName,
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   })
 
-  const isLoggedIn = !!session
+  const isLoggedIn = (userName ?? "Guest") !== "Guest"
 
   const handleLogout = async () => {
     console.log("User logged out!");
     await userLogout();
-    navigate('/index');
+    await refetch()
+    navigate('/');
   }
-
-
-    const { data: user, isPending } = useQuery({
-      queryKey: ['userName'],
-      queryFn: getUserName,
-      enabled: isLoggedIn,
-    })
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -98,7 +97,7 @@ const Navbar = () => {
                         {isPending ? (
                           <span className="inline-block h-3 w-16 rounded bg-muted-foreground/30 animate-pulse" />
                             ) : (
-                              (user ?? "Guest").split(" ")[0]
+                              (userName ?? "Guest").split(" ")[0]
                             )}
                           </span>
                     </div>
@@ -186,12 +185,6 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       </nav>
-
-      {/* <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode={authMode}
-      /> */}
     </>
   );
 };
