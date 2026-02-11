@@ -2,10 +2,10 @@ import { supabase } from "@/lib/supabase";
 import { AuthError } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
-export async function getAuthUser() {
-   const { data, error } = await supabase.auth.getUser()
+export async function getSession() {
+   const { data, error } = await supabase.auth.getSession()
   if (error) throw error
-  return data.user  
+  return data  
 }
 
 export async function getUserName() {
