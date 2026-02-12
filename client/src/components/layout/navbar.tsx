@@ -80,13 +80,17 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-4">
               {isLoggedIn ? (
                 <div className="flex items-center gap-4">
-                  
-                    <Button variant="ghost" size="sm" className="gap-2 hover:bg-gold/90 hover:rounded-xl cursor-pointer">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 hover:bg-gold/90 hover:rounded-xl cursor-pointer"
+                  >
                     <Link to="/dashboard">
                       <Calendar className="h-4 w-4" />
                       My Bookings
-                      </Link>
-                    </Button>
+                    </Link>
+                  </Button>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
                       <User className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">
@@ -148,11 +152,11 @@ const Navbar = () => {
                 <div className="pt-4 border-t border-border space-y-3">
                   {isLoggedIn ? (
                     <>
-                      <Link to="/dashboard" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" className="w-full">
+                      <Button asChild variant="outline" className="w-full">
+                        <Link to="/dashboard" onClick={() => setIsOpen(false)}>
                           My Bookings
-                        </Button>
-                      </Link>
+                        </Link>
+                      </Button>
                       <Button variant="ghost" className="w-full" onClick={handleLogout}>
                         Sign Out
                       </Button>
