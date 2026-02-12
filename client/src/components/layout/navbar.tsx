@@ -80,12 +80,13 @@ const Navbar = () => {
             <div className="hidden md:flex items-center gap-4">
               {isLoggedIn ? (
                 <div className="flex items-center gap-4">
-                  <Link to="/dashboard">
+                  
                     <Button variant="ghost" size="sm" className="gap-2 hover:bg-gold/90 hover:rounded-xl cursor-pointer">
+                    <Link to="/dashboard">
                       <Calendar className="h-4 w-4" />
                       My Bookings
+                      </Link>
                     </Button>
-                  </Link>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
                       <User className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">
