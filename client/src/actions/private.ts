@@ -10,20 +10,18 @@ export async function getSession() {
 
 export async function getUserName() {
   try {
-   const { data, error } = await supabase.auth.getUser()
-  if (error) throw error
+   const { data: auth, error: authError } = await supabase.auth.getUser()
 
-  const userId = data.user?.id
-  if (!userId) return "Guest"
+  // logged out -> normal
+  if (authError || !auth.user?.id) return "Guest"
 
   const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("name")
-    .eq("id", userId)
+    .eq("id", auth.user.id)
     .single()
 
-  if (profileError) throw profileError
-  
+  if (profileError) return "Guest"
   return profile?.name ?? "Guest"
   } catch (error) {
     const err = error as AuthError;

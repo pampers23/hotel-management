@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getUserName } from '@/actions/private';
 import { userLogout } from '@/actions/auth';
 
@@ -12,11 +12,12 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
+
 
   const {
     data: userName,
     isPending,
-    refetch,
   } = useQuery({
     queryKey: ["userName"],
     queryFn: getUserName,
@@ -30,7 +31,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     console.log("User logged out!");
     await userLogout();
-    await refetch()
+    await queryClient.invalidateQueries({ queryKey: ["userName"] })
     navigate('/');
   }
 
