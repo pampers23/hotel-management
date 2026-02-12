@@ -13,7 +13,7 @@ import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import authImage from "@/assets/download.jpg"
 import { Eye, EyeOff } from "lucide-react"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { userLogin } from "@/actions/auth"
 import { Controller, useForm } from "react-hook-form"
 import { loginSchema, type LoginSchema } from "@/zod-schema"
@@ -23,10 +23,15 @@ import { useNavigate } from "react-router-dom"
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = React.useState(false)
+  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: userLogin,
-    onSuccess: () => navigate("/dashboard"),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["userName"] })
+      toast.success("Login Successful")
+      navigate("/")
+    },
     onError: (err) => {
       console.error("LOGIN ERROR:", err)
       toast.error("Login Failed", { description: err?.message ?? "Unknown error" })
