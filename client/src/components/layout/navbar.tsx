@@ -15,15 +15,9 @@ const Navbar = () => {
   const queryClient = useQueryClient();
 
 
-  const {
-    data: userName,
-    isPending,
-  } = useQuery({
+  const { data: userName, isPending } = useQuery({
     queryKey: ["userName"],
     queryFn: getUserName,
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
   })
 
   const isLoggedIn = (userName ?? "Guest") !== "Guest"
@@ -186,7 +180,7 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       </nav>
-    </>
+      </>
   );
 };
 

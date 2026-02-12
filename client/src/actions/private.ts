@@ -10,19 +10,9 @@ export async function getSession() {
 
 export async function getUserName() {
   try {
-   const { data: auth, error: authError } = await supabase.auth.getUser()
-
-  // logged out -> normal
-  if (authError || !auth.user?.id) return "Guest"
-
-  const { data: profile, error: profileError } = await supabase
-    .from("users")
-    .select("name")
-    .eq("id", auth.user.id)
-    .single()
-
-  if (profileError) return "Guest"
-  return profile?.name ?? "Guest"
+    const { data } = await supabase.auth.getUser()
+    
+    return data.user?.user_metadata?.name ?? "Guest"
   } catch (error) {
     const err = error as AuthError;
     toast.error(`Failed to fetch user name: ${err.message}`);
