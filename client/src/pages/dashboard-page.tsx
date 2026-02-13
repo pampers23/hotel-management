@@ -11,9 +11,11 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { useAuthStore } from "@/stores/auth-store"
 import { useBookingStore } from "@/stores/booking-store"
 import type { Booking } from "@/types/types"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { getSession } from "@/actions/private"
+import { userLogout } from "@/actions/auth"
 
 
 const statusStyle: Record<Booking['status'], { variant: 'default' | 'secondary' | 'destructive' | 'gold' 
@@ -27,14 +29,21 @@ const statusStyle: Record<Booking['status'], { variant: 'default' | 'secondary' 
 
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useAuthStore();
   const { bookings } = useBookingStore();
+  const queryClient = useQueryClient();
+
+  const { data: session, isPending } = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+  })
+
+  const user = session?.user
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isPending && !session) {
         navigate('/');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isPending, session, navigate]);
 
   const upcomingBookings = bookings.filter(
     (b) => b.status === 'confirmed' || b.status === 'pending'
@@ -43,8 +52,9 @@ const DashboardPage = () => {
     (b) => b.status === 'completed' || b.status === 'cancelled'
   );
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    userLogout();
+    await queryClient.invalidateQueries({ queryKey: ["userName"] })
     navigate('/');
   };
 
@@ -107,11 +117,11 @@ const DashboardPage = () => {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center text-gold font-heading text-2xl">
-                {user?.name?.charAt(0).toUpperCase()}
+                {user?.user_metadata.name?.charAt(0).toUpperCase()}
               </div>
               <div className="text-primary-foreground">
-                <h1 className="font-heading text-2xl font-bold">Welcome, {user?.name?.split(' ')[0]}!</h1>
-                <p className="text-primary-foreground/70 text-sm">{user?.email}</p>
+                <h1 className="font-heading text-2xl font-bold">Welcome, {user?.user_metadata.name?.split(' ')[0]}!</h1>
+                <p className="text-primary-foreground/70 text-sm">{user?.user_metadata.email}</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -164,7 +174,7 @@ const DashboardPage = () => {
               <CardContent className="p-4">
                 <h3 className="font-semibold mb-2">Member Since</h3>
                 <p className="text-sm text-muted-foreground">
-                  {user?.memberSince ? format(user.memberSince, 'MMMM yyyy') : 'N/A'}
+                  {user?.created_at ? format(new Date(user.created_at), 'MMMM yyyy') : 'N/A'}
                 </p>
               </CardContent>
             </Card>
