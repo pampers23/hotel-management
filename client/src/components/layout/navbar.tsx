@@ -1,42 +1,60 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, Calendar, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getUserName } from '@/actions/private';
-import { userLogout } from '@/actions/auth';
+import { useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { motion, AnimatePresence } from "framer-motion"
+import { Menu, X, User, Calendar, LogOut } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { getSession, getProfile } from "@/actions/private"
+import { userLogout } from "@/actions/auth"
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const queryClient = useQueryClient()
 
-
-  const { data: userName, isPending } = useQuery({
-    queryKey: ["userName"],
-    queryFn: getUserName,
+  // 1) Session is the source of truth
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+    staleTime: 0,
   })
 
-  const isLoggedIn = (userName ?? "Guest") !== "Guest"
+  const isLoggedIn = !!session?.user
 
-  const handleLogout = async () => {
-    console.log("User logged out!");
-    await userLogout();
-    await queryClient.invalidateQueries({ queryKey: ["userName"] })
-    navigate('/');
-  }
+  // 2) Profile only when logged in
+  const { data: profile, isPending: isProfilePending } = useQuery({
+    queryKey: ["profile", session?.user?.id],
+    queryFn: getProfile,
+    enabled: !!session?.user?.id,
+    staleTime: 0,
+  })
+
+  const displayName =
+    profile?.displayName ??
+    session?.user?.user_metadata?.name ??
+    session?.user?.user_metadata?.full_name ??
+    session?.user?.email ??
+    "Guest"
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Rooms', path: '/rooms' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
-  ];
+    { name: "Home", path: "/" },
+    { name: "Rooms", path: "/rooms" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+  ]
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path
+
+  const handleLogout = async () => {
+    await userLogout()
+
+    // ✅ force UI to update immediately
+    await queryClient.invalidateQueries({ queryKey: ["session"] })
+    await queryClient.invalidateQueries({ queryKey: ["profile"] })
+
+    navigate("/")
+  }
 
   return (
     <>
@@ -45,12 +63,8 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <span className="font-heading text-2xl font-bold text-primary">
-                Lumière
-              </span>
-              <span className="text-gold text-sm font-medium tracking-widest uppercase">
-                Hotel
-              </span>
+              <span className="font-heading text-2xl font-bold text-primary">Lumière</span>
+              <span className="text-gold text-sm font-medium tracking-widest uppercase">Hotel</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -60,9 +74,7 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   className={`relative text-sm font-medium transition-colors duration-300 ${
-                    isActive(link.path)
-                      ? 'text-primary'
-                      : 'text-muted-foreground hover:text-primary'
+                    isActive(link.path) ? "text-primary" : "text-muted-foreground hover:text-primary"
                   }`}
                 >
                   {link.name}
@@ -91,26 +103,33 @@ const Navbar = () => {
                       My Bookings
                     </Link>
                   </Button>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm font-medium">
-                        {isPending ? (
-                          <span className="inline-block h-3 w-16 rounded bg-muted-foreground/30 animate-pulse" />
-                            ) : (
-                              (userName ?? "Guest").split(" ")[0]
-                            )}
-                          </span>
-                    </div>
-                  <Button className='cursor-pointer hover:bg-gold/90 hover:rounded-xl' variant="ghost" size="icon" onClick={handleLogout}>
+
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
+                    <User className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">
+                      {isProfilePending ? (
+                        <span className="inline-block h-3 w-16 rounded bg-muted-foreground/30 animate-pulse" />
+                      ) : (
+                        displayName.split(" ")[0]
+                      )}
+                    </span>
+                  </div>
+
+                  <Button
+                    className="cursor-pointer hover:bg-gold/90 hover:rounded-xl"
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleLogout}
+                  >
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
                 <>
-                  <Button className='cursor-pointer' variant="ghost" onClick={() => navigate('/login')}>
+                  <Button className="cursor-pointer" variant="ghost" onClick={() => navigate("/login")}>
                     Sign In
                   </Button>
-                  <Button className='cursor-pointer' variant="gold" onClick={() => navigate('/sign-up')}>
+                  <Button className="cursor-pointer" variant="gold" onClick={() => navigate("/sign-up")}>
                     Book Now
                   </Button>
                 </>
@@ -118,10 +137,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2"
-              onClick={() => setIsOpen(!isOpen)}
-            >
+            <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
@@ -132,7 +148,7 @@ const Navbar = () => {
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden bg-background border-t border-border"
             >
@@ -143,12 +159,13 @@ const Navbar = () => {
                     to={link.path}
                     onClick={() => setIsOpen(false)}
                     className={`block py-2 text-base font-medium ${
-                      isActive(link.path) ? 'text-primary' : 'text-muted-foreground'
+                      isActive(link.path) ? "text-primary" : "text-muted-foreground"
                     }`}
                   >
                     {link.name}
                   </Link>
                 ))}
+
                 <div className="pt-4 border-t border-border space-y-3">
                   {isLoggedIn ? (
                     <>
@@ -163,18 +180,10 @@ const Navbar = () => {
                     </>
                   ) : (
                     <>
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => navigate('/login')}
-                      >
+                      <Button variant="outline" className="w-full" onClick={() => navigate("/login")}>
                         Sign In
                       </Button>
-                      <Button
-                        variant="gold"
-                        className="w-full"
-                        onClick={() => navigate('/register')}
-                      >
+                      <Button variant="gold" className="w-full" onClick={() => navigate("/sign-up")}>
                         Book Now
                       </Button>
                     </>
@@ -185,8 +194,8 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       </nav>
-      </>
-  );
-};
+    </>
+  )
+}
 
-export default Navbar;
+export default Navbar

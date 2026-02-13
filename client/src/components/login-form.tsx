@@ -28,7 +28,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const { mutate, isPending } = useMutation({
     mutationFn: userLogin,
     onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["session"] })
       await queryClient.invalidateQueries({ queryKey: ["userName"] })
+      await queryClient.invalidateQueries({ queryKey: ["profile"] })
       toast.success("Login Successful")
       navigate("/")
     },

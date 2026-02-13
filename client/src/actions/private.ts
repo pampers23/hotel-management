@@ -19,3 +19,71 @@ export async function getUserName() {
     return "Guest";
   }  
 }
+
+export async function getProfile() {
+  try {
+    const { data: authData, error: authError } = await supabase.auth.getUser()
+    if (authError || !authData.user) return null
+
+    const authUser = authData.user
+
+    const { data: row } = await supabase
+      .from("users")
+      .select("name, avatar_url")
+      .eq("id", authUser.id)
+      .maybeSingle()
+
+    const displayName = 
+      row?.name || 
+      authUser.user_metadata?.name ||
+      authUser.user_metadata?.full_name ||  
+      authUser.email ||
+      "Guest"
+
+      const avatarUrl = 
+        row?.avatar_url ||
+        authUser.user_metadata?.avatar_url ||
+        authUser.user_metadata?.picture ||
+        null
+
+    return { displayName, avatarUrl }
+
+  } catch (error) {
+    const err = error as AuthError;
+    toast.error(`Failed to fetch profile: ${err.message}`);
+    return null;
+  }
+}
+
+export async function updateAvatar(file: File) {
+  try {
+    const { data: auth  } = await supabase.auth.getUser()
+    const userId = auth.user?.id
+    if (!userId) throw new Error("Not logged in")
+
+    const ext = file.name.split('.').pop() || "jpg"
+    const path = `${userId}/avatar.${ext}`
+
+    const { error: uploadError } = await supabase.storage
+      .from("upload-images")
+      .upload(path, file, { upsert: true })
+
+    if (uploadError) throw uploadError
+
+    const { data: pub } = supabase.storage.from("upload-images").getPublicUrl(path)
+    const avatar_url = pub.publicUrl
+
+    const { error: dbError } = await supabase
+      .from("users")
+      .upsert({ id: userId, avatar_url }, { onConflict: "id" })  
+
+    if (dbError) throw dbError
+
+    toast.success("Avatar updated successfully!")
+
+    return avatar_url
+  } catch (error) {
+    const err = error as AuthError;
+    toast.error(`Failed to update avatar: ${err.message}`);
+  }
+}
