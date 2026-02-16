@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { mapBooking } from "@/mapper/mapper";
 import type { Booking, CreateBookingInput } from "@/types/types";
 import { AuthError } from "@supabase/supabase-js";
 import { toast } from "sonner";
@@ -90,7 +91,6 @@ export async function updateAvatar(file: File) {
 }
 
 export async function createBooking(payload: CreateBookingInput): Promise<Booking>  {
-  try {
     const { data, error } = await supabase
       .from("bookings")
       .insert([payload])
@@ -99,11 +99,7 @@ export async function createBooking(payload: CreateBookingInput): Promise<Bookin
 
       if (error) throw error
 
-      return data
-  } catch (error) {
-    const err = error as AuthError;
-    toast.error(`Failed to create booking: ${err.message}`);
-    }
+      return mapBooking(data)
 }
 
 
