@@ -11,18 +11,14 @@ import {
   ChevronRight,
   ExternalLink,
 } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-
-import { useBookingStore } from "@/stores/booking-store"
 import type { Booking } from "@/types/types"
-
 import { useQuery } from "@tanstack/react-query"
-import { getProfile, getSession } from "@/actions/private"
+import { getBookings, getProfile, getSession } from "@/actions/private"
 
 const statusStyle: Record<
   Booking["status"],
@@ -46,7 +42,6 @@ const statusStyle: Record<
 
 const DashboardPage = () => {
   const navigate = useNavigate()
-  const { bookings } = useBookingStore()
 
   // 1) session
   const { data: session, isPending: isSessionPending } = useQuery({
@@ -60,6 +55,12 @@ const DashboardPage = () => {
   const { data: profile, isPending: isProfilePending } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: getProfile, // should return { displayName, avatarUrl } | null
+    enabled: !!user?.id,
+  })
+
+  const { data: bookings = [], isPending: isBookingsPending } = useQuery({
+    queryKey: ["bookings", user?.id],
+    queryFn: () => getBookings(user!.id), // returns Booking[]
     enabled: !!user?.id,
   })
 
@@ -152,7 +153,7 @@ const DashboardPage = () => {
   )
 
   // optional: avoid flashing dashboard before redirect
-  if (isSessionPending) return null
+  if (isSessionPending || isBookingsPending) return null
 
   return (
     <div className="min-h-screen bg-muted/30">

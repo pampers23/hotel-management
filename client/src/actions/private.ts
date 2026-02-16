@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import type { Booking, CreateBookingInput } from "@/types/types";
 import { AuthError } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
@@ -85,5 +86,41 @@ export async function updateAvatar(file: File) {
   } catch (error) {
     const err = error as AuthError;
     toast.error(`Failed to update avatar: ${err.message}`);
+  }
+}
+
+export async function createBooking(payload: CreateBookingInput): Promise<Booking>  {
+  try {
+    const { data, error } = await supabase
+      .from("bookings")
+      .insert([payload])
+      .select()
+      .single()
+
+      if (error) throw error
+
+      return data
+  } catch (error) {
+    const err = error as AuthError;
+    toast.error(`Failed to create booking: ${err.message}`);
+    }
+}
+
+
+export async function getBookings(userId: string): Promise<Booking[]> {
+  try {
+    const { data, error} = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+
+    if (error) throw error
+
+    return data
+  } catch (error) {
+    const err = error as AuthError;
+    toast.error(`Failed to fetch bookings: ${err.message}`);
+    return [];
   }
 }
