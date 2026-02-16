@@ -13,37 +13,58 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useBookingStore } from "@/stores/booking-store";
-import { useAuthStore } from "@/stores/auth-store";
-import { roomService, bookingService } from "@/services/mock-api";
+import { roomService } from "@/services/mock-api";
 import type { Room, Booking } from "@/types/types";
 import { toast } from "sonner"
+import { useQueryClient, useQuery, useMutation,  } from "@tanstack/react-query";
+import { createBooking, getSession } from "@/actions/private";
 
 
 const BookingConfirmationPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
-  const { currentBooking, addBooking, clearCurrentBooking } = useBookingStore();
-  const { user, isAuthenticated } = useAuthStore();
+  const { currentBooking, clearCurrentBooking } = useBookingStore();
   const [room, setRoom] = useState<Room | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<Booking | null>(null);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+      mutationFn: createBooking,
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({
+          queryKey: ["bookings", user?.id],
+        })
+
+        setBookingDetails(data)
+        setIsConfirmed(true)
+        clearCurrentBooking()
+        toast.success("Booking confirmed successfully!")
+      },
+  })
+
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+  })
+
+  const user = session?.user;
+
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!user) {
       navigate('/');
-      return;
     }
-
     const fetchRoom = async () => {
-      if (roomId) {
-        const data = await roomService.getRoomById(roomId);
-        setRoom(data);
-        setIsLoading(false);
-      }
+      if (!roomId) return;
+      
+      const data = await roomService.getRoomById(roomId);
+      setRoom(data);
     };
+
     fetchRoom();
-  }, [roomId, isAuthenticated, navigate]);
+  }, [roomId, user, navigate]);
+
 
   if (!currentBooking.dateRange.from || !currentBooking.dateRange.to || !room) {
     return (
@@ -67,27 +88,22 @@ const BookingConfirmationPage = () => {
   const serviceFee = 25;
   const total = subtotal + taxes + serviceFee;
 
-  const handleConfirmBooking = async () => {
-    setIsLoading(true);
+  const handleConfirmBooking = () => {
+    if (!user || !room) return;
 
-    const newBooking = await bookingService.createBooking({
-      roomId: room.id,
-      roomName: room.name,
-      roomImage: room.images[0],
-      checkIn: currentBooking.dateRange.from!,
-      checkOut: currentBooking.dateRange.to!,
+    mutation.mutate({
+      user_id: user.id,
+      room_id: room.id,
+      room_name: room.name,
+      room_image: room.images[0],
+      check_in: currentBooking.dateRange.from!.toISOString(),
+      check_out: currentBooking.dateRange.to!.toISOString(),
       guests: currentBooking.guests,
-      totalPrice: total,
+      total_price: total,
       status: 'confirmed',
-    });
+    })
+  }
 
-    addBooking(newBooking);
-    setBookingDetails(newBooking);
-    setIsConfirmed(true);
-    setIsLoading(false);
-    clearCurrentBooking();
-    toast.success('Booking confirmed successfully!');
-  };
 
   if (isConfirmed && bookingDetails) {
     return (
@@ -228,8 +244,8 @@ const BookingConfirmationPage = () => {
 
                 <h3 className="font-semibold mb-2">Guest Information</h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="text-muted-foreground">Name:</span> {user?.name}</p>
-                  <p><span className="text-muted-foreground">Name:</span> {user?.email}</p>
+                  <p><span className="text-muted-foreground">Name:</span> {user?.user_metadata?.name}</p>
+                  <p><span className="text-muted-foreground">Email:</span> {user?.user_metadata?.email}</p>
                 </div>
               </CardContent>
             </Card>
@@ -284,9 +300,9 @@ const BookingConfirmationPage = () => {
                   size="lg"
                   className="w-full"
                   onClick={handleConfirmBooking}
-                  disabled={isLoading}
+                  disabled={mutation.isPending}
                 >
-                  {isLoading ? 'Processing...' : 'Confirm Booking'}
+                  {mutation.isPending ? 'Processing...' : 'Confirm Booking'}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
