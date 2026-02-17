@@ -254,7 +254,7 @@ const DashboardPage = () => {
                 </TabsList>
 
                 <Link to="/rooms">
-                  <Button variant="gold" size="sm" className="gap-2">
+                  <Button variant="gold" size="sm" className="gap-2 cursor-pointer">
                     Book New Stay
                     <ExternalLink className="h-3 w-3" />
                   </Button>
@@ -273,7 +273,7 @@ const DashboardPage = () => {
                         Start planning your next luxury getaway.
                       </p>
                       <Link to="/rooms">
-                        <Button variant="gold">Browse Rooms</Button>
+                        <Button className="cursor-pointer" variant="gold">Browse Rooms</Button>
                       </Link>
                     </CardContent>
                   </Card>
