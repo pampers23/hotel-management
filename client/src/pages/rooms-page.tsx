@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { motion } from "framer-motion"
 import { Grid, List, SlidersHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -12,29 +12,38 @@ import {
 import RoomCard from "@/components/rooms/room-card"
 import FilterSidebar from "@/components/rooms/filter-sidebar"
 import SkeletonLoader from "@/components/ui/skeleton-loader"
-import { roomService } from "@/services/mock-api"
 import { useSearchStore } from "@/stores/search-store"
 import type { Room } from "@/types/types"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { useQuery } from "@tanstack/react-query"
+import { directus } from "@/lib/directus"
+import { readItems } from "@directus/sdk"
 
 
 const RoomsPage = () => {
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { filters } = useSearchStore();
   const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      setIsLoading(true);
-      const data = await roomService.getRooms(filters);
-      setRooms(data);
-      setIsLoading(false);
-    };
-    fetchRooms();
-  }, [filters]);
+  const { data: rooms = [], isPending: isLoading, error } = useQuery<Room[]>({
+    queryKey: ["rooms", filters],
+    queryFn: async () => {
+      const data = await directus.request(
+        readItems("rooms", {
+          filter: {
+            available: { _eq: true },
+          }
+        })
+      )
+
+      return data as Room[];
+    }
+  })
+
+  if (error) {
+    return ()
+  }
 
   const sortedRooms = useMemo(() => {
     const sorted = [...rooms];

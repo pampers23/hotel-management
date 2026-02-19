@@ -277,7 +277,7 @@ const DashboardPage = () => {
                       </Link>
                     </CardContent>
                   </Card>
-                ) : (
+                ) : ( 
                   upcomingBookings.map((booking) => (
                     <BookingCard key={booking.id} booking={booking} />
                   ))
