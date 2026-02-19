@@ -149,7 +149,7 @@ const Index = () => {
       {/* featured rooms */}
       <section className="section-padding">
         <div className="container-luxury">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mn-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
             <div>
               <h2 className="font-heading text-4xl font-bold mb-2">Featured Rooms</h2>
               <p className="text-muted-foreground">

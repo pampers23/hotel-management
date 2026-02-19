@@ -1,10 +1,10 @@
 export type User = {
-    id: string;
-    email: string;
-    name: string;
-    avatar?: string;
-    phone?: string;
-    memberSince: Date;
+  id: string
+  email: string
+  name: string
+  avatar?: string
+  phone?: string
+  memberSince: Date
 }
 
 export type Booking = {
@@ -19,6 +19,32 @@ export type Booking = {
     status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
     createdAt: Date;
 }
+
+export type BookingRow = {
+  id: string;
+  room_id: string;
+  room_name: string;
+  room_image: string;
+  check_in: string;
+  check_out: string;
+  guests: number;
+  total_price: number;
+  status: Booking["status"];
+  created_at: string;
+};
+
+export type CreateBookingInput = {
+  user_id: string;
+  room_id: string;
+  room_name: string;
+  room_image: string;
+  check_in: string;
+  check_out: string;
+  guests: number;
+  total_price: number;
+  status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
+}
+
 
 export type DateRange = {
     from: Date | undefined;

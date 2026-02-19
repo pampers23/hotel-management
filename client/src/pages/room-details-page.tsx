@@ -90,8 +90,8 @@ const RoomDetailsPage = () => {
         <div className="container-luxury pt-6">
           <Button
             variant="ghost"
-            className="gap-2"
-            onClick={() => navigate('/room')}
+            className="gap-2 cursor-pointer hover:bg-gold"
+            onClick={() => navigate('/rooms')}
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Rooms
@@ -154,9 +154,9 @@ const RoomDetailsPage = () => {
               {/* tabs */}
               <Tabs defaultValue="amenities" className="mb-8">
                 <TabsList className="w-full justify-start">
-                  <TabsTrigger value="amenities">Amenities</TabsTrigger>
-                  <TabsTrigger value="policies">Policies</TabsTrigger>
-                  <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                  <TabsTrigger className="cursor-pointer" value="amenities">Amenities</TabsTrigger>
+                  <TabsTrigger className="cursor-pointer" value="policies">Policies</TabsTrigger>
+                  <TabsTrigger className="cursor-pointer" value="reviews">Reviews</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="amenities" className="pt-6">

@@ -1,32 +1,60 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, Calendar, LogOut } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/stores/auth-store';
-import AuthModal from '@/components/auth/auth-modal';
+import { useState } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { motion, AnimatePresence } from "framer-motion"
+import { Menu, X, User, Calendar, LogOut } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { getSession, getProfile } from "@/actions/private"
+import { userLogout } from "@/actions/auth"
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  const location = useLocation();
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const [isOpen, setIsOpen] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const queryClient = useQueryClient()
+
+  // 1) Session is the source of truth
+  const { data: session } = useQuery({
+    queryKey: ["session"],
+    queryFn: getSession,
+    staleTime: 0,
+  })
+
+  const isLoggedIn = !!session?.user
+
+  // 2) Profile only when logged in
+  const { data: profile, isPending: isProfilePending } = useQuery({
+    queryKey: ["profile", session?.user?.id],
+    queryFn: getProfile,
+    enabled: !!session?.user?.id,
+    staleTime: 0,
+  })
+
+  const displayName =
+    profile?.displayName ??
+    session?.user?.user_metadata?.name ??
+    session?.user?.user_metadata?.full_name ??
+    session?.user?.email ??
+    "Guest"
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Rooms', path: '/rooms' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' },
-  ];
+    { name: "Home", path: "/" },
+    { name: "Rooms", path: "/rooms" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+  ]
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path
 
-  const handleAuthClick = (mode: 'login' | 'register') => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
-    setIsOpen(false);
-  };
+  const handleLogout = async () => {
+    await userLogout()
+
+    // ✅ force UI to update immediately
+    await queryClient.invalidateQueries({ queryKey: ["session"] })
+    await queryClient.invalidateQueries({ queryKey: ["profile"] })
+
+    navigate("/")
+  }
 
   return (
     <>
@@ -35,12 +63,8 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2">
-              <span className="font-heading text-2xl font-bold text-primary">
-                Lumière
-              </span>
-              <span className="text-gold text-sm font-medium tracking-widest uppercase">
-                Hotel
-              </span>
+              <span className="font-heading text-2xl font-bold text-primary">Lumière</span>
+              <span className="text-gold text-sm font-medium tracking-widest uppercase">Hotel</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -50,9 +74,7 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   className={`relative text-sm font-medium transition-colors duration-300 ${
-                    isActive(link.path)
-                      ? 'text-primary'
-                      : 'text-muted-foreground hover:text-primary'
+                    isActive(link.path) ? "text-primary" : "text-muted-foreground hover:text-primary"
                   }`}
                 >
                   {link.name}
@@ -68,28 +90,46 @@ const Navbar = () => {
 
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center gap-4">
-              {isAuthenticated ? (
+              {isLoggedIn ? (
                 <div className="flex items-center gap-4">
-                  <Link to="/dashboard">
-                    <Button variant="ghost" size="sm" className="gap-2 hover:bg-gold/90 hover:rounded-xl cursor-pointer">
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="gap-2 hover:bg-gold/90 hover:rounded-xl cursor-pointer"
+                  >
+                    <Link to="/dashboard">
                       <Calendar className="h-4 w-4" />
                       My Bookings
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
+
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
                     <User className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{user?.name?.split(' ')[0]}</span>
+                    <span className="text-sm font-medium">
+                      {isProfilePending ? (
+                        <span className="inline-block h-3 w-16 rounded bg-muted-foreground/30 animate-pulse" />
+                      ) : (
+                        displayName.split(" ")[0]
+                      )}
+                    </span>
                   </div>
-                  <Button className='cursor-pointer hover:bg-gold/90 hover:rounded-xl' variant="ghost" size="icon" onClick={logout}>
+
+                  <Button
+                    className="cursor-pointer hover:bg-gold/90 hover:rounded-xl"
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleLogout}
+                  >
                     <LogOut className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
                 <>
-                  <Button className='cursor-pointer' variant="ghost" onClick={() => handleAuthClick('login')}>
+                  <Button className="cursor-pointer" variant="ghost" onClick={() => navigate("/login")}>
                     Sign In
                   </Button>
-                  <Button className='cursor-pointer' variant="gold" onClick={() => handleAuthClick('register')}>
+                  <Button className="cursor-pointer" variant="gold" onClick={() => navigate("/sign-up")}>
                     Book Now
                   </Button>
                 </>
@@ -97,10 +137,7 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2"
-              onClick={() => setIsOpen(!isOpen)}
-            >
+            <button className="md:hidden p-2" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
@@ -111,7 +148,7 @@ const Navbar = () => {
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="md:hidden bg-background border-t border-border"
             >
@@ -122,38 +159,31 @@ const Navbar = () => {
                     to={link.path}
                     onClick={() => setIsOpen(false)}
                     className={`block py-2 text-base font-medium ${
-                      isActive(link.path) ? 'text-primary' : 'text-muted-foreground'
+                      isActive(link.path) ? "text-primary" : "text-muted-foreground"
                     }`}
                   >
                     {link.name}
                   </Link>
                 ))}
+
                 <div className="pt-4 border-t border-border space-y-3">
-                  {isAuthenticated ? (
+                  {isLoggedIn ? (
                     <>
-                      <Link to="/dashboard" onClick={() => setIsOpen(false)}>
-                        <Button variant="outline" className="w-full">
+                      <Button asChild variant="outline" className="w-full">
+                        <Link to="/dashboard" onClick={() => setIsOpen(false)}>
                           My Bookings
-                        </Button>
-                      </Link>
-                      <Button variant="ghost" className="w-full" onClick={logout}>
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" className="w-full" onClick={handleLogout}>
                         Sign Out
                       </Button>
                     </>
                   ) : (
                     <>
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => handleAuthClick('login')}
-                      >
+                      <Button variant="outline" className="w-full" onClick={() => navigate("/login")}>
                         Sign In
                       </Button>
-                      <Button
-                        variant="gold"
-                        className="w-full"
-                        onClick={() => handleAuthClick('register')}
-                      >
+                      <Button variant="gold" className="w-full" onClick={() => navigate("/sign-up")}>
                         Book Now
                       </Button>
                     </>
@@ -164,14 +194,8 @@ const Navbar = () => {
           )}
         </AnimatePresence>
       </nav>
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode={authMode}
-      />
     </>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

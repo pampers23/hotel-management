@@ -141,7 +141,7 @@ const Contact = () => {
                     required
                   />
                 </div>
-                <Button type="submit" variant="gold" size="lg" disabled={isSubmitting}>
+                <Button className="cursor-pointer" type="submit" variant="gold" size="lg" disabled={isSubmitting}>
                   {isSubmitting ? (
                     'Sending...'
                   ) : (

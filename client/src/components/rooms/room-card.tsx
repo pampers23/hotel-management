@@ -119,7 +119,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
           <Link to={`/rooms/${room.id}`} className="mt-auto">
             <Button
               variant="outline"
-              className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+              className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors cursor-pointer"
             >
               View Details
             </Button>
