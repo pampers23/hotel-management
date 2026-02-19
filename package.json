@@ -2,6 +2,8 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
     "date-fns": "^4.1.0",
+    "directus": "^11.3.5",
+    "pg": "^8.18.0",
     "react-router-dom": "^7.10.1",
     "tailwindcss": "^4.1.18"
   }
