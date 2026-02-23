@@ -21,7 +21,7 @@ export const mockRooms: Room[] = [
     featured: true,
     available: true,
     rating: 4.9,
-    reviewCount: 128,
+    review_count: 128,
   },
   {
     id: '2',
@@ -38,7 +38,7 @@ export const mockRooms: Room[] = [
     featured: true,
     available: true,
     rating: 4.7,
-    reviewCount: 94,
+    review_count: 94,
   },
   {
     id: '3',
@@ -55,7 +55,7 @@ export const mockRooms: Room[] = [
     featured: false,
     available: true,
     rating: 4.5,
-    reviewCount: 256,
+    review_count: 256,
   },
   {
     id: '4',
@@ -73,7 +73,7 @@ export const mockRooms: Room[] = [
     featured: true,
     available: true,
     rating: 5.0,
-    reviewCount: 42,
+    review_count: 42,
   },
   {
     id: '5',
@@ -90,7 +90,7 @@ export const mockRooms: Room[] = [
     featured: false,
     available: true,
     rating: 4.6,
-    reviewCount: 187,
+    review_count: 187,
   },
   {
     id: '6',
@@ -107,7 +107,7 @@ export const mockRooms: Room[] = [
     featured: true,
     available: true,
     rating: 4.8,
-    reviewCount: 76,
+    review_count: 76,
   },
 ];
 

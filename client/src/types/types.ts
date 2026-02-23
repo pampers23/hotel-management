@@ -52,22 +52,23 @@ export type DateRange = {
 }
 
 export type Room = {
-    id: string;
-    name: string;
-    type: 'standard' | 'deluxe' | 'suite' | 'penthouse';
-    description: string;
-    shortDescription: string;
-    price: number;
-    originalPrice?: number;
-    capacity: number;
-    size: number;
-    bedType: string;
-    images: string[];
-    amenities: string[];
-    featured: boolean;
-    available: boolean;
-    rating: number;
-    reviewCount: number;
+  id: string;
+  name: string;
+  type: 'standard' | 'deluxe' | 'suite' | 'penthouse';
+  description: string;
+  shortDescription: string;
+  price: number;
+  originalPrice?: number;
+  capacity: number;
+  size: number;
+  bedType: string;
+  cover_image: string;
+  images?: { directus_files_id: string }[]; 
+  amenities?: string[]; 
+  featured: boolean;
+  available: boolean;
+  rating: number;
+  review_count: number;
 }
 
 export type SearchFilters = {

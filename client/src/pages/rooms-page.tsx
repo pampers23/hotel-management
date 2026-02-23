@@ -26,24 +26,16 @@ const RoomsPage = () => {
   const { filters } = useSearchStore();
   const isMobile = useIsMobile();
 
-  const { data: rooms = [], isPending: isLoading, error } = useQuery<Room[]>({
+  const { data: rooms = [], isPending: isLoading, error,} = useQuery<Room[]>({
     queryKey: ["rooms", filters],
     queryFn: async () => {
-      const data = await directus.request(
-        readItems("rooms", {
-          filter: {
-            available: { _eq: true },
-          }
-        })
+      return await directus.request<Room[]>(
+        readItems("rooms")
       )
-
-      return data as Room[];
-    }
+    },
   })
 
-  if (error) {
-    return ()
-  }
+  console.log(rooms[0]?.amenities);
 
   const sortedRooms = useMemo(() => {
     const sorted = [...rooms];
@@ -59,6 +51,16 @@ const RoomsPage = () => {
         return sorted.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     }
   }, [rooms, sortBy]);
+  
+    if (error) {
+    return (
+      <div className="h-96 w-full flex flex-col gap-4 items-center justify-center">
+        <p className="text-sm text-red-500">
+          Failed to load rooms. Please try again.
+        </p>
+      </div>
+    )
+  }
 
 //   const activeFiltersCount = filters.roomType.length + filters.amenities.length;
 
