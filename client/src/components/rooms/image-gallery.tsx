@@ -13,6 +13,15 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="aspect-[4/3] md:aspect-[3/2] rounded-xl bg-muted flex items-center justify-center">
+        <p className="text-muted-foreground">No images available</p>
+      </div>
+    );
+  }
+
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
@@ -37,7 +46,7 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors" />
-          
+
           {/* Navigation Arrows */}
           <Button
             variant="ghost"
@@ -73,9 +82,8 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
           {images.slice(0, 4).map((image, index) => (
             <motion.div
               key={index}
-              className={`relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer ${
-                index === currentIndex ? 'ring-2 ring-gold' : ''
-              }`}
+              className={`relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer ${index === currentIndex ? 'ring-2 ring-gold' : ''
+                }`}
               onClick={() => setCurrentIndex(index)}
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
@@ -109,7 +117,7 @@ const ImageGallery = ({ images, roomName }: ImageGalleryProps) => {
                 alt={`${roomName} - View ${currentIndex + 1}`}
                 className="w-full h-auto max-h-[80vh] object-contain"
               />
-              
+
               <Button
                 variant="ghost"
                 size="icon"

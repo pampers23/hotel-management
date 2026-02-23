@@ -14,6 +14,7 @@ interface RoomCardProps {
   index?: number;
 }
 
+
 const amenityIcons: Record<string, React.ReactNode> = {
   Wifi: <Wifi className="h-3.5 w-3.5" />,
   'Coffee Maker': <Coffee className="h-3.5 w-3.5" />,
@@ -21,6 +22,14 @@ const amenityIcons: Record<string, React.ReactNode> = {
 }
 
 const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
+  const imageUrl = room.cover_image
+    ? `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.cover_image}?width=400`
+    : "/fallback.jpg";
+
+  const amenities = Array.isArray(room.amenities) ? room.amenities : [];
+  
+  console.log("Room images:", room.images?.[0]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,7 +40,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
         {/* image */}
         <div className="relative overflow-hidden aspect-[4/3]">
           <img 
-            src={room.images[0]}
+            src={imageUrl}
             alt={room.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
@@ -65,7 +74,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
           <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-full">
             <Star className="h-3.5 w-3.5 fill-gold text-gold" />
             <span className="text-sm font-medium">{room.rating}</span>
-            <span className="text-xs text-muted-foreground">({room.reviewCount})</span>
+            <span className="text-xs text-muted-foreground">({room.review_count})</span>
           </div>
         </div>
 
@@ -98,7 +107,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
 
             {/* amenities */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {room.amenities.slice(0, 3).map((amenity) => (
+              {amenities.slice(0, 3).map((amenity) => (
                 <span
                   key={amenity}
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full"
@@ -107,9 +116,10 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
                   {amenity}
                 </span>
               ))}
-              {room.amenities.length > 3 && (
+
+              {amenities.length > 3 && (
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                  +{room.amenities.length - 3} more
+                  +{amenities.length - 3} more
                 </span>
               )}
             </div>

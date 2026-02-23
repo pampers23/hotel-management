@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Star, Users, Maximize, Check, ArrowLeft, Wifi, Coffee, Tv, Bath, Wind, Lock } from "lucide-react"
@@ -9,48 +9,49 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ImageGallery from "@/components/rooms/image-gallery"
 import BookingSummary from "@/components/booking/booking-summary"
 import AuthModal from "@/components/auth/auth-modal"
-import { roomService } from "@/services/mock-api"
 import { useAuthStore } from "@/stores/auth-store"
-import type { Room } from "@/types/types"
 import SkeletonLoader from "@/components/ui/skeleton-loader"
 import { toast } from "sonner"
+import { useQuery } from "@tanstack/react-query"
+import { directus } from "@/lib/directus"
+import { readItem } from "@directus/sdk"
 
 
 const amenityIcons: Record<string, React.ReactNode> = {
-    'WiFi': <Wifi className="h-5 w-5" />,
-    'Coffee Maker': <Coffee className="h-5 w-5" />,
-    'Smart TV': <Tv className="h-5 w-5" />,
-    'Soaking Tub': <Bath className="h-5 w-5" />,
-    'Jacuzzi': <Bath className="h-5 w-5" />,
-    'Air conditioning': <Wind className="h-5 w-5" />,
-    'Safe': <Lock className="h-5 w-5" />
+  'WiFi': <Wifi className="h-5 w-5" />,
+  'Coffee Maker': <Coffee className="h-5 w-5" />,
+  'Smart TV': <Tv className="h-5 w-5" />,
+  'Soaking Tub': <Bath className="h-5 w-5" />,
+  'Jacuzzi': <Bath className="h-5 w-5" />,
+  'Air conditioning': <Wind className="h-5 w-5" />,
+  'Safe': <Lock className="h-5 w-5" />
 }
 
 
 const RoomDetailsPage = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [room, setRoom] = useState<Room | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { id } = useParams<{ id: string }>();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { isAuthenticated } = useAuthStore();
 
-  useEffect(() => {
-    const fetchRoom = async () => {
-      if (id) {
-        const  data = await roomService.getRoomById(id);
-        setRoom(data);
-        setIsLoading(false);
-      }
-    };
-    fetchRoom();
-  }, [id]);
+  const { data: room, isPending: isLoading, } = useQuery({
+    queryKey: ["rooms", id],
+    enabled: !!id,
+    queryFn: async () => {
+      return await directus.request(
+        readItem("rooms", id!, {
+          fields: ["*", "images.directus_files_id"],
+        })
+      );
+    },
+  })
+
 
   const handleBookNow = () => {
     if (!isAuthenticated) {
       setShowAuthModal(true);
     } else {
-      toast.success('Booking initiated! Redirecting to cnfirmation...' );
+      toast.success('Booking initiated! Redirecting to confirmation...');
       navigate(`/booking/confirm/${room?.id}`);
     }
   }
@@ -77,15 +78,19 @@ const RoomDetailsPage = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <h1 className="font-heading text-3xl font-bold mb-4">Room Not Found</h1>
-          <Button onClick={() => navigate('/rooms')}>Back to Home</Button>
+          <Button className="cursor-pointer" onClick={() => navigate('/rooms')}>Back to Home</Button>
         </div>
       </div>
     );
   }
 
+  const galleryImages = (room.images ?? []).map(
+    (img) => `${import.meta.env.VITE_DIRECTUS_URL}/assets/${img.directus_files_id}`
+  );
+
   return (
     <>
-     <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background">
         {/* back button */}
         <div className="container-luxury pt-6">
           <Button
@@ -100,7 +105,7 @@ const RoomDetailsPage = () => {
 
         {/* gallery */}
         <section className="container-luxury py-8">
-          <ImageGallery images={room.images} roomName={room.name} />
+          <ImageGallery images={galleryImages} roomName={room.name} />
         </section>
 
         {/* content */}
@@ -119,7 +124,7 @@ const RoomDetailsPage = () => {
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 fill-gold text-gold" />
                     <span className="font-medium">{room.rating}</span>
-                    <span className="text-muted-foreground">({room.reviewCount} reviews)</span>
+                    <span className="text-muted-foreground">({room.review_count} reviews)</span>
                   </div>
                 </div>
                 <h1 className="font-heading text-4xl font-bold mb-4">{room.name}</h1>
@@ -233,9 +238,9 @@ const RoomDetailsPage = () => {
             <div className="lg:col-span-1">
               <BookingSummary room={room} onBookNow={handleBookNow} />
             </div>
-          </div>
+          </div>  
         </section>
-      </div> 
+      </div>
 
       <AuthModal
         isOpen={showAuthModal}
