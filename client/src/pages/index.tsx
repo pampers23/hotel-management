@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Star, ArrowRight, Sparkles, Shield, Clock, Award } from "lucide-react";
@@ -6,29 +6,41 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import SearchWidget from "@/components/booking/search-widget";
 import RoomCard from "@/components/rooms/room-card";
-import { roomService } from "@/services/mock-api";
 import type { Room } from "@/types/types";
 import SkeletonLoader from "@/components/ui/skeleton-loader";
 import heroImage from '@/assets/hero-hotel.jpg';
+import { directus } from "@/lib/directus";
+import { readItems } from "@directus/sdk";
+import type { DirectusRoomImage } from "@/lib/directus-schema";
 
 
 
 const Index = () => {
-  const [featuredRooms, setFeaturedRooms] = useState<Room[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: featuredRooms = [], isPending: isLoading } = useQuery<Room[]>({
+    queryKey: ["rooms", "featured"],
+    queryFn: async () => {
+      const res = await directus.request(
+        readItems("rooms", {
+          filter: {
+            featured: { _eq: true }
+          },
+          fields: ["*", "images.directus_files_id"]
+        })
+      );
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      const rooms = await roomService.getFeaturedRooms();
-      setFeaturedRooms(rooms);
-      setIsLoading(false);
-    };
-    fetchRooms();
-  }, []);
+      return res.map(raw => ({
+        ...raw,
+        reviewCount: raw.review_count,
+        shortDescription: raw.short_description,
+        images: raw.images?.map((img: DirectusRoomImage) => img.directus_files_id) ?? [],
+        review_count: raw.review_count
+      } as Room));
+    },
+  });
 
   const features = [
     {
-      icon: <Sparkles className="h-6 w-6"/>,
+      icon: <Sparkles className="h-6 w-6" />,
       title: 'Luxury experience',
       description: 'Every detail crafted for your comfort and pleasure.'
     },
@@ -55,8 +67,8 @@ const Index = () => {
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
         {/* background image */}
         <div className="absolute inset-0">
-          <img 
-            src={heroImage} 
+          <img
+            src={heroImage}
             alt="Lumière Hotel Lobby"
             className="w-full h-full object-cover"
           />
@@ -65,38 +77,38 @@ const Index = () => {
 
         {/* content */}
         <div className="relative z-10 container-luxury text-center text-primary-foreground">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <Badge variant="gold" className="mb-6 text-sm px-4 py-1">
-                <Star className="h-3 w-3 mr-1 fill-current" />
-                5-Star Luxury Hotel
-              </Badge>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <Badge variant="gold" className="mb-6 text-sm px-4 py-1">
+              <Star className="h-3 w-3 mr-1 fill-current" />
+              5-Star Luxury Hotel
+            </Badge>
 
-              <h1 className="font-heading text-5xl md:text-7xl font-bold mb-6 leading-tight">
-                Where Elegance<br />Meets Comfort
-              </h1>
+            <h1 className="font-heading text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              Where Elegance<br />Meets Comfort
+            </h1>
 
-              <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-8">
-                Discover unparalled luxury at Lumière Hotel. Experience world-class amenities,
-                breathtaking views, and service that exceeds every expectation.
-              </p>
+            <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-8">
+              Discover unparalled luxury at Lumière Hotel. Experience world-class amenities,
+              breathtaking views, and service that exceeds every expectation.
+            </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/rooms">
-                  <Button variant="gold" size="xl" className="cursor-pointer">
-                    Explore Rooms
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-                </Link>
-                <Button variant="heroOutline" size="xl" className="cursor-pointer">
-
-                    Virtual Tour
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/rooms">
+                <Button variant="gold" size="xl" className="cursor-pointer">
+                  Explore Rooms
+                  <ArrowRight className="h-5 w-5" />
                 </Button>
-              </div>
-            </motion.div>
+              </Link>
+              <Button variant="heroOutline" size="xl" className="cursor-pointer">
+
+                Virtual Tour
+              </Button>
+            </div>
+          </motion.div>
         </div>
 
         {/* scroll indicator */}
@@ -118,14 +130,14 @@ const Index = () => {
       {/* search widget */}
       <section className="relative z-20 -mt-24 pb-16">
         <div className="container-luxury">
-            <SearchWidget />
+          <SearchWidget />
         </div>
       </section>
 
       {/* features */}
       <section className="section-padding bg-muted">
         <div className="container-luxury">
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -142,7 +154,7 @@ const Index = () => {
                 <p className="text-muted-foreground text-sm">{feature.description}</p>
               </motion.div>
             ))}
-         </div>
+          </div>
         </div>
       </section>
 
@@ -166,12 +178,12 @@ const Index = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {isLoading
-               ? Array.from({ length: 3 }).map((_, i) => (
-                  <SkeletonLoader key={i} type="card" />
-               ))
-               : featuredRooms.slice(0, 3).map((room, index) => (
-                  <RoomCard key={room.id} room={room} index={index}/>
-               ))
+              ? Array.from({ length: 3 }).map((_, i) => (
+                <SkeletonLoader key={i} type="card" />
+              ))
+              : featuredRooms.slice(0, 3).map((room, index) => (
+                <RoomCard key={room.id} room={room} index={index} />
+              ))
             }
           </div>
         </div>

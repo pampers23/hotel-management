@@ -40,7 +40,7 @@ const RoomsPage = () => {
         ...raw,
         reviewCount: raw.review_count,
         shortDescription: raw.short_description,
-        images: raw.images?.map((img: DirectusRoomImage) => img.directus_files_id),
+        images: raw.images?.map((img: DirectusRoomImage) => img.directus_files_id) ?? [],
         review_count: raw.review_count
       } as Room))
     },
@@ -153,8 +153,8 @@ const RoomsPage = () => {
               {/* rooms grid */}
               <div
                 className={`grid gap-8 ${viewMode === 'grid'
-                    ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                    : 'grid-cols-1'
+                  ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+                  : 'grid-cols-1'
                   }`}
               >
                 {isLoading
