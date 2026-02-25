@@ -15,6 +15,7 @@ import { toast } from "sonner"
 import { useQuery } from "@tanstack/react-query"
 import { directus } from "@/lib/directus"
 import { readItem } from "@directus/sdk"
+import type { Room } from "@/types/types"
 
 
 const amenityIcons: Record<string, React.ReactNode> = {
@@ -38,11 +39,21 @@ const RoomDetailsPage = () => {
     queryKey: ["rooms", id],
     enabled: !!id,
     queryFn: async () => {
-      return await directus.request(
+      const raw = await directus.request(
         readItem("rooms", id!, {
           fields: ["*", "images.directus_files_id"],
         })
       );
+
+      if (!raw) return null;
+
+      return {
+        ...raw,
+        reviewCount: raw.review_count,
+        shortDescription: raw.short_description,
+        images: raw.images?.map((img: { directus_files_id: string }) => img.directus_files_id) ?? [],
+        review_count: raw.review_count
+      } as unknown as Room;
     },
   })
 
@@ -85,7 +96,7 @@ const RoomDetailsPage = () => {
   }
 
   const galleryImages = (room.images ?? []).map(
-    (img) => `${import.meta.env.VITE_DIRECTUS_URL}/assets/${img.directus_files_id}`
+    (imgId: string) => `${import.meta.env.VITE_DIRECTUS_URL}/assets/${imgId}`
   );
 
   return (
@@ -166,7 +177,7 @@ const RoomDetailsPage = () => {
 
                 <TabsContent value="amenities" className="pt-6">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {room.amenities.map((amenity) => (
+                    {(room.amenities ?? []).map((amenity: string) => (
                       <div
                         key={amenity}
                         className="flex items-center gap-3 p-3 rounded-lg bg-muted"
@@ -238,7 +249,7 @@ const RoomDetailsPage = () => {
             <div className="lg:col-span-1">
               <BookingSummary room={room} onBookNow={handleBookNow} />
             </div>
-          </div>  
+          </div>
         </section>
       </div>
 

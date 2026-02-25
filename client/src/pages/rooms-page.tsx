@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { useQuery } from "@tanstack/react-query"
 import { directus } from "@/lib/directus"
 import { readItems } from "@directus/sdk"
+import type { DirectusRoomImage } from "@/lib/directus-schema"
 
 
 const RoomsPage = () => {
@@ -26,12 +27,22 @@ const RoomsPage = () => {
   const { filters } = useSearchStore();
   const isMobile = useIsMobile();
 
-  const { data: rooms = [], isPending: isLoading, error,} = useQuery<Room[]>({
+  const { data: rooms = [], isPending: isLoading, error, } = useQuery<Room[]>({
     queryKey: ["rooms", filters],
     queryFn: async () => {
-      return await directus.request<Room[]>(
-        readItems("rooms")
+      const res = await directus.request(
+        readItems("rooms", {
+          fields: ["*", "images.directus_files_id"]
+        })
       )
+
+      return res.map(raw => ({
+        ...raw,
+        reviewCount: raw.review_count,
+        shortDescription: raw.short_description,
+        images: raw.images?.map((img: DirectusRoomImage) => img.directus_files_id),
+        review_count: raw.review_count
+      } as Room))
     },
   })
 
@@ -46,13 +57,13 @@ const RoomsPage = () => {
         return sorted.sort((a, b) => b.price - a.price);
       case 'rating':
         return sorted.sort((a, b) => b.rating - a.rating);
-      case 'featured':    
+      case 'featured':
       default:
         return sorted.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
     }
   }, [rooms, sortBy]);
-  
-    if (error) {
+
+  if (error) {
     return (
       <div className="h-96 w-full flex flex-col gap-4 items-center justify-center">
         <p className="text-sm text-red-500">
@@ -62,7 +73,7 @@ const RoomsPage = () => {
     )
   }
 
-//   const activeFiltersCount = filters.roomType.length + filters.amenities.length;
+  //   const activeFiltersCount = filters.roomType.length + filters.amenities.length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -74,7 +85,7 @@ const RoomsPage = () => {
             animate={{ opacity: 1, y: 0 }}
           >
             <h1 className="font-heading text-4xl md:text-5xl font-bold mb-4">
-                Our Rooms & Suites
+              Our Rooms & Suites
             </h1>
             <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
               Discover our collection of elegantly appointed rooms and suites,
@@ -87,24 +98,24 @@ const RoomsPage = () => {
       {/* content */}
       <section className="section-padding">
         <div className="container-luxury">
-           <div className="flex flex-col lg:flex-row gap-8">
-              {/* sidebar - desktop only */}
-              {!isMobile && <FilterSidebar />}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* sidebar - desktop only */}
+            {!isMobile && <FilterSidebar />}
 
-              {/* main content */}
-              <div className="flex-1 ">
-                {/* toolbar */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                  <div className="flex items-center gap-4">
-                    {isMobile && <FilterSidebar />}
-                    <p className="text-muted-foreground">
-                      {isLoading ? 'Loading...' : `${sortedRooms.length} rooms available`}
-                    </p>
-                  </div>
+            {/* main content */}
+            <div className="flex-1 ">
+              {/* toolbar */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                <div className="flex items-center gap-4">
+                  {isMobile && <FilterSidebar />}
+                  <p className="text-muted-foreground">
+                    {isLoading ? 'Loading...' : `${sortedRooms.length} rooms available`}
+                  </p>
+                </div>
 
-                  <div className="flex items-center gap-4">
-                    {/* sort */}
-                    <Select value={sortBy} onValueChange={setSortBy}>
+                <div className="flex items-center gap-4">
+                  {/* sort */}
+                  <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger className="w-40">
                       <SlidersHorizontal className="h-4 w-4 mr-2" />
                       <SelectValue placeholder="Sort by" />
@@ -117,62 +128,61 @@ const RoomsPage = () => {
                     </SelectContent>
                   </Select>
 
-                    {/* view mode - desktop only */}
-                    <div className="hidden sm:flex items-center border rounded-lg">
-                      <Button
-                        variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                        size="icon"
-                        className="rounded-r-none cursor-pointer"
-                        onClick={() => setViewMode('grid')}
-                      >
-                        <Grid className="h-4 w-4" />  
-                      </Button> 
-                      <Button
-                        variant={viewMode === 'list' ? 'default' : 'ghost'}
-                        size="icon"
-                        className="rounded-l-none cursor-pointer"
-                        onClick={() => setViewMode('list')}
-                      >
-                        <List className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  {/* view mode - desktop only */}
+                  <div className="hidden sm:flex items-center border rounded-lg">
+                    <Button
+                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      size="icon"
+                      className="rounded-r-none cursor-pointer"
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'ghost'}
+                      size="icon"
+                      className="rounded-l-none cursor-pointer"
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-
-                {/* rooms grid */}
-                <div
-                  className={`grid gap-8 ${
-                    viewMode === 'grid'
-                      ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
-                      : 'grid-cols-1'
-                  }`}
-                >
-                   {isLoading
-                     ? Array.from({ length: 6 }).map((_, i) => (
-                        <SkeletonLoader key={i} type="card" />
-                     ))
-                     : sortedRooms.map((room, index) => (
-                        <RoomCard key={room.id} room={room} index={index} />
-                     ))
-                   }
-                </div>
-
-                {/* empty state */}
-                {!isLoading && sortedRooms.length === 0 && (
-                   <div className="text-center py-16">
-                    <h3 className="font-heading text-2xl font-semibold mb-2">
-                       No rooms found
-                    </h3>
-                    <p className="text-muted-foreground mb-6">
-                      Try adjusting your filters to see more options.
-                    </p>
-                    <Button className="cursor-pointer" variant="outline" onClick={() => window.location.reload()}>
-                      Reset Filters
-                    </Button>
-                   </div>
-                )}
               </div>
-           </div> 
+
+              {/* rooms grid */}
+              <div
+                className={`grid gap-8 ${viewMode === 'grid'
+                    ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3'
+                    : 'grid-cols-1'
+                  }`}
+              >
+                {isLoading
+                  ? Array.from({ length: 6 }).map((_, i) => (
+                    <SkeletonLoader key={i} type="card" />
+                  ))
+                  : sortedRooms.map((room, index) => (
+                    <RoomCard key={room.id} room={room} index={index} />
+                  ))
+                }
+              </div>
+
+              {/* empty state */}
+              {!isLoading && sortedRooms.length === 0 && (
+                <div className="text-center py-16">
+                  <h3 className="font-heading text-2xl font-semibold mb-2">
+                    No rooms found
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    Try adjusting your filters to see more options.
+                  </p>
+                  <Button className="cursor-pointer" variant="outline" onClick={() => window.location.reload()}>
+                    Reset Filters
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     </div>

@@ -8,16 +8,16 @@ export type User = {
 }
 
 export type Booking = {
-    id: string;
-    roomId: string;
-    roomName: string;
-    roomImage: string;
-    checkIn: Date;
-    checkOut: Date;
-    guests: number;
-    totalPrice: number;
-    status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
-    createdAt: Date;
+  id: string;
+  roomId: string;
+  roomName: string;
+  roomImage: string;
+  checkIn: Date;
+  checkOut: Date;
+  guests: number;
+  totalPrice: number;
+  status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
+  createdAt: Date;
 }
 
 export type BookingRow = {
@@ -47,8 +47,8 @@ export type CreateBookingInput = {
 
 
 export type DateRange = {
-    from: Date | undefined;
-    to: Date | undefined;
+  from: Date | undefined;
+  to: Date | undefined;
 }
 
 export type Room = {
@@ -63,8 +63,8 @@ export type Room = {
   size: number;
   bedType: string;
   cover_image: string;
-  images?: { directus_files_id: string }[]; 
-  amenities?: string[]; 
+  images: string[];
+  amenities?: string[];
   featured: boolean;
   available: boolean;
   rating: number;
@@ -72,10 +72,10 @@ export type Room = {
 }
 
 export type SearchFilters = {
-    checkIn: Date | null;
-    checkOut: Date | null;
-    guests: number;
-    roomType: string[];
-    priceRange: [number, number];
-    amenities: string[];
+  checkIn: Date | null;
+  checkOut: Date | null;
+  guests: number;
+  roomType: string[];
+  priceRange: [number, number];
+  amenities: string[];
 }
