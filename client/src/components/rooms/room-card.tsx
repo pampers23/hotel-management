@@ -22,12 +22,17 @@ const amenityIcons: Record<string, React.ReactNode> = {
 }
 
 const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
-  const imageUrl = room.cover_image
-    ? `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.cover_image}?width=400`
+  const baseUrl = import.meta.env.VITE_DIRECTUS_URL;
+
+  // Robust image resolution: Cover Image -> First Gallery Image -> Fallback
+  const imageId = room.cover_image || (room.images && room.images.length > 0 ? room.images[0] : null);
+
+  const imageUrl = imageId && baseUrl
+    ? `${baseUrl}/assets/${imageId}?width=400`
     : "/fallback.jpg";
 
   const amenities = Array.isArray(room.amenities) ? room.amenities : [];
-  
+
   console.log("Room images:", room.images?.[0]);
 
   return (
@@ -39,7 +44,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
       <Card hover className="overflow-hidden group h-full flex flex-col">
         {/* image */}
         <div className="relative overflow-hidden aspect-[4/3]">
-          <img 
+          <img
             src={imageUrl}
             alt={room.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
