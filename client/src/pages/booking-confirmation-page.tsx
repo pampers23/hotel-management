@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format, differenceInDays } from "date-fns";
-import { 
-  CheckCircle, Calendar, Users, MapPin, CreditCard, 
-  ArrowRight, Download, Share2 
+import {
+  CheckCircle, Calendar, Users, MapPin, CreditCard,
+  ArrowRight, Download, Share2
 } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import {
@@ -13,34 +13,59 @@ import {
 } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useBookingStore } from "@/stores/booking-store";
-import { roomService } from "@/services/mock-api";
 import type { Room, Booking } from "@/types/types";
 import { toast } from "sonner"
-import { useQueryClient, useQuery, useMutation,  } from "@tanstack/react-query";
+import { useQueryClient, useQuery, useMutation, } from "@tanstack/react-query";
+import { directus } from "@/lib/directus"
+import { readItems } from "@directus/sdk"
 import { createBooking, getSession } from "@/actions/private";
+import type { DirectusRoomImage } from "@/lib/directus-schema";
 
 
 const BookingConfirmationPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const { currentBooking, clearCurrentBooking } = useBookingStore();
-  const [room, setRoom] = useState<Room | null>(null);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<Booking | null>(null);
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-      mutationFn: createBooking,
-      onSuccess: (data) => {
-        queryClient.invalidateQueries({
-          queryKey: ["bookings", user?.id],
+  const { data: room, isPending: isRoomLoading } = useQuery({
+    queryKey: ["room", roomId],
+    enabled: !!roomId,
+    queryFn: async () => {
+      const res = await directus.request(
+        readItems("rooms", {
+          filter: { id: { _eq: roomId } },
+          fields: ["*", "images.directus_files_id"]
         })
+      )
 
-        setBookingDetails(data)
-        setIsConfirmed(true)
-        clearCurrentBooking()
-        toast.success("Booking confirmed successfully!")
-      },
+      const raw = res[0]
+      if (!raw) return null
+
+      return {
+        ...raw,
+        reviewCount: raw.review_count ?? 0,
+        shortDescription: raw.short_description,
+        images: raw.images?.map((img: DirectusRoomImage) => img.directus_files_id) ?? [],
+        amenities: raw.amenities ?? []
+      } as Room
+    }
+  })
+
+  const mutation = useMutation({
+    mutationFn: createBooking,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ["bookings", user?.id],
+      })
+
+      setBookingDetails(data)
+      setIsConfirmed(true)
+      clearCurrentBooking()
+      toast.success("Booking confirmed successfully!")
+    },
   })
 
   const { data: session } = useQuery({
@@ -50,20 +75,13 @@ const BookingConfirmationPage = () => {
 
   const user = session?.user;
 
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/');
-    }
-    const fetchRoom = async () => {
-      if (!roomId) return;
-      
-      const data = await roomService.getRoomById(roomId);
-      setRoom(data);
-    };
-
-    fetchRoom();
-  }, [roomId, user, navigate]);
+  if (isRoomLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
 
 
   if (!currentBooking.dateRange.from || !currentBooking.dateRange.to || !room) {
@@ -95,13 +113,18 @@ const BookingConfirmationPage = () => {
       user_id: user.id,
       room_id: room.id,
       room_name: room.name,
-      room_image: room.images[0],
+      room_image: room.images[0] || room.cover_image || "",
       check_in: currentBooking.dateRange.from!.toISOString(),
       check_out: currentBooking.dateRange.to!.toISOString(),
       guests: currentBooking.guests,
       total_price: total,
       status: 'confirmed',
     })
+  }
+
+  if (!user) {
+    navigate("/");
+    return null;
   }
 
 
@@ -135,14 +158,18 @@ const BookingConfirmationPage = () => {
                     <Download className="h-4 w-4" />
                   </Button>
                   <Button variant="outline" size="icon">
-                    <Share2 className="h-4 w-4"/>
+                    <Share2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
 
               <div className="flex gap-4 mb-6">
-                <img 
-                  src={room.images[0]}
+                <img
+                  src={
+                    room.images?.[0]
+                      ? `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.images[0]}`
+                      : "/fallback.jpg"
+                  }
                   alt={room.name}
                   className="w-24 h-24 rounded-lg object-cover"
                 />
@@ -219,7 +246,7 @@ const BookingConfirmationPage = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* left - details */}
           <motion.div
-            initial={{ opacity: 0, x:  20 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
@@ -228,8 +255,12 @@ const BookingConfirmationPage = () => {
                 <h2 className="font-heading text-xl font-semibold mb-4">Your stay</h2>
 
                 <div className="flex gap-4 mb-6">
-                  <img 
-                    src={room.images[0]}
+                  <img
+                    src={
+                      room.images?.[0]
+                        ? `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.images[0]}`
+                        : "/fallback.jpg"
+                    }
                     alt={room.name}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
@@ -306,7 +337,7 @@ const BookingConfirmationPage = () => {
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  By confirming, you agree to our Terms of Service and Cancellation Policy. 
+                  By confirming, you agree to our Terms of Service and Cancellation Policy.
                 </p>
               </CardContent>
             </Card>
