@@ -16,6 +16,7 @@ import { useQuery } from "@tanstack/react-query"
 import { directus } from "@/lib/directus"
 import { readItem } from "@directus/sdk"
 import type { Room } from "@/types/types"
+import type { DirectusRoomImage } from "@/lib/directus-schema"
 
 
 const amenityIcons: Record<string, React.ReactNode> = {
@@ -35,27 +36,22 @@ const RoomDetailsPage = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { isAuthenticated } = useAuthStore();
 
-  const { data: room, isPending: isLoading, } = useQuery({
-    queryKey: ["rooms", id],
-    enabled: !!id,
-    queryFn: async () => {
-      const raw = await directus.request(
-        readItem("rooms", id!, {
-          fields: ["*", "images.directus_files_id"],
-        })
-      );
+  const { data: room, isLoading } = useQuery<Room>({
+  queryKey: ["room", id],
+  queryFn: async () => {
+    const res = await directus.request(
+      readItem("rooms", id!, {
+        fields: ["*", "images.directus_files_id"]
+      })
+    );
 
-      if (!raw) return null;
-
-      return {
-        ...raw,
-        reviewCount: raw.review_count,
-        shortDescription: raw.short_description,
-        images: raw.images?.map((img: { directus_files_id: string }) => img.directus_files_id) ?? [],
-        review_count: raw.review_count
-      } as unknown as Room;
-    },
-  })
+    return {
+      ...res,
+      images: res.images?.map((img: DirectusRoomImage) => img.directus_files_id) ?? []
+    };
+  },
+  enabled: !!id
+});
 
 
   const handleBookNow = () => {
@@ -99,6 +95,8 @@ const RoomDetailsPage = () => {
     (imgId: string) => `${import.meta.env.VITE_DIRECTUS_URL}/assets/${imgId}`
   );
 
+  console.log("Images: ", galleryImages);
+  
   return (
     <>
       <div className="min-h-screen bg-background">

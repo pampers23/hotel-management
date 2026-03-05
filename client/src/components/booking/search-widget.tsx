@@ -124,7 +124,7 @@ const SearchWidget = () => {
                 mode="single"
                 selected={dateRange.from}
                 onSelect={(date) =>
-                  setLocalDateRange((prev) => ({ ...prev, from: date }))
+                  setLocalDateRange((prev) => ({ ...prev, to: date }))
                 }
                 disabled={(date) => date < new Date()}
                 initialFocus

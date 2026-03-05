@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { mapBooking } from "@/mapper/mapper";
-import type { Booking, CreateBookingInput } from "@/types/types";
+import type { Booking, CreateBookingInput, Room } from "@/types/types";
 import { AuthError } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
@@ -119,4 +119,50 @@ export async function getBookings(userId: string): Promise<Booking[]> {
     toast.error(`Failed to fetch bookings: ${err.message}`);
     return [];
   }
+}
+
+export async function getRoom() {
+  try {
+    const { data, error } = await supabase
+      .from("rooms")
+      .select("id, name, type, description, price, original_price, rating, review_count, description, capacity, size, amenities")
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      return data
+  } catch (error) {
+    const err = error as AuthError;
+    console.error("Rooms", err.message)
+  }
+}
+
+export async function getRoomImage(id: string) {
+  const { data, error } = await supabase
+    .from("rooms")
+    .select("*, cover_image")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+
+  const { data: urlData } = supabase.storage
+    .from("upload-images")
+    .getPublicUrl(data.cover_image);
+
+  return {
+    ...data,
+    cover_url: urlData.publicUrl
+  }
+}
+
+export async function getRooms(): Promise<Room[]> {
+  const { data, error } = await supabase
+    .from("rooms")
+    .select("*")
+
+  if (error) throw error;
+
+  return data ?? [];
 }
