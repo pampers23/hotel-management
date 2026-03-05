@@ -66,8 +66,8 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
       {/* price header */}
       <div className="flex items-baseline gap-2 mb-6">
         <span className="font-heading text-3xl font-bold">${room.price}</span>
-        {room.originalPrice && (
-          <span className="text-lg text-muted-foreground">${room.originalPrice}</span>
+        {room.original_price && (
+          <span className="text-lg text-muted-foreground">${room.original_price}</span>
         )}
         <span className="text-muted-foreground">/ night</span>
       </div>

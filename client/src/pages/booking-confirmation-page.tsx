@@ -113,7 +113,7 @@ const BookingConfirmationPage = () => {
       user_id: user.id,
       room_id: room.id,
       room_name: room.name,
-      room_image: room.images[0] || room.cover_image || "",
+      room_image: room.images?.[0] ?? room.cover_image ?? "",
       check_in: currentBooking.dateRange.from!.toISOString(),
       check_out: currentBooking.dateRange.to!.toISOString(),
       guests: currentBooking.guests,
