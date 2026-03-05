@@ -9,7 +9,9 @@
 //     id: '1',
 //     name: 'Ocean View Suite',
 //     type: 'suite',
-//     description: 'Experience unparalleled luxury in our Ocean View Suite, featuring panoramic views of the azure waters, a private balcony, and elegant contemporary furnishings. This 850 sq ft sanctuary offers a separate living area, premium bedding, and a marble-clad bathroom with deep soaking tub.',
+//     description: 'Experience unparalleled luxury in our Ocean View Suite, featuring panoramic views of 
+//     the azure waters, a private balcony, and elegant contemporary furnishings. This 850 sq ft sanctuary
+//     offers a separate living area, premium bedding, and a marble-clad bathroom with deep soaking tub.',
 //     shortDescription: 'Panoramic ocean views with private balcony',
 //     price: 450,
 //     originalPrice: 550,

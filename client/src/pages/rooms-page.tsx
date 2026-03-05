@@ -12,38 +12,22 @@ import {
 import RoomCard from "@/components/rooms/room-card"
 import FilterSidebar from "@/components/rooms/filter-sidebar"
 import SkeletonLoader from "@/components/ui/skeleton-loader"
-import { useSearchStore } from "@/stores/search-store"
+// import { useSearchStore } from "@/stores/search-store"
 import type { Room } from "@/types/types"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useQuery } from "@tanstack/react-query"
-import { directus } from "@/lib/directus"
-import { readItems } from "@directus/sdk"
-import type { DirectusRoomImage } from "@/lib/directus-schema"
+import { getRooms } from "@/actions/private"
 
 
 const RoomsPage = () => {
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const { filters } = useSearchStore();
+  // const { filters } = useSearchStore();
   const isMobile = useIsMobile();
 
-  const { data: rooms = [], isPending: isLoading, error, } = useQuery<Room[]>({
-    queryKey: ["rooms", filters],
-    queryFn: async () => {
-      const res = await directus.request(
-        readItems("rooms", {
-          fields: ["*", "images.directus_files_id"]
-        })
-      )
-
-      return res.map(raw => ({
-        ...raw,
-        reviewCount: raw.review_count,
-        shortDescription: raw.short_description,
-        images: raw.images?.map((img: DirectusRoomImage) => img.directus_files_id) ?? [],
-        review_count: raw.review_count
-      } as Room))
-    },
+  const { data: rooms = [], isLoading, error } = useQuery<Room[]>({
+    queryKey: ["rooms"],
+    queryFn: getRooms
   })
 
   console.log(rooms[0]?.amenities);

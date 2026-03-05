@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+// import { Tailspin } from "ldrs/react";
+// import "ldrs/react/Tailspin.css";
 
 interface RoomCardProps {
   room: Room;
@@ -22,18 +24,8 @@ const amenityIcons: Record<string, React.ReactNode> = {
 }
 
 const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
-  const baseUrl = import.meta.env.VITE_DIRECTUS_URL;
 
-  // Robust image resolution: Cover Image -> First Gallery Image -> Fallback
-  const imageId = room.cover_image || (room.images && room.images.length > 0 ? room.images[0] : null);
-
-  const imageUrl = imageId && baseUrl
-    ? `${baseUrl}/assets/${imageId}?width=400`
-    : "/fallback.jpg";
-
-  const amenities = Array.isArray(room.amenities) ? room.amenities : [];
-
-  console.log("Room images:", room.images?.[0]);
+  const imageUrl = `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.cover_image}`
 
   return (
     <motion.div
@@ -57,9 +49,9 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
             {room.featured && (
               <Badge variant="gold">Featured</Badge>
             )}
-            {room.originalPrice && (
+            {room.original_price && (
               <Badge variant="destructive">
-                {Math.round((1 - room.price / room.originalPrice) * 100)} % OFF
+                {Math.round((1 - room.price / room.original_price) * 100)} % OFF
               </Badge>
             )}
           </div>
@@ -68,8 +60,8 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
           <div className="absolute bottom-4 left-4 text-primary-foreground">
             <div className="flex items-baseline gap-2">
               <span className="font-heading text-2xl font-bold">${room.price}</span>
-              {room.originalPrice && (
-                <span className="text-sm line-through opacity-70">${room.originalPrice}</span>
+              {room.original_price && (
+                <span className="text-sm line-through opacity-70">${room.original_price}</span>
               )}
               <span className="text-sm opacity-80">/night</span>
             </div>
@@ -78,7 +70,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
           {/* rating */}
           <div className="absolute bottom-4 right-4 flex items-center gap-1 bg-background/90 backdrop-blur-sm px-2 py-1 rounded-full">
             <Star className="h-3.5 w-3.5 fill-gold text-gold" />
-            <span className="text-sm font-medium">{room.rating}</span>
+            <span className="text-sm font-medium">{Number(room.rating).toFixed(1)}</span>
             <span className="text-xs text-muted-foreground">({room.review_count})</span>
           </div>
         </div>
@@ -95,7 +87,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
                 {room.name}
               </h3>
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                {room.shortDescription}
+                {room.short_description}
               </p>
             </div>
             {/* features */}
@@ -112,7 +104,7 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
 
             {/* amenities */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {amenities.slice(0, 3).map((amenity) => (
+              {room.amenities.slice(0, 3).map((amenity) => (
                 <span
                   key={amenity}
                   className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full"
@@ -122,9 +114,9 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
                 </span>
               ))}
 
-              {amenities.length > 3 && (
+              {room.amenities.length > 3 && (
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
-                  +{amenities.length - 3} more
+                  +{room.amenities.length - 3} more
                 </span>
               )}
             </div>

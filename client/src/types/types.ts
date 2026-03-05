@@ -51,20 +51,21 @@ export type DateRange = {
   to: Date | undefined;
 }
 
+
 export type Room = {
   id: string;
   name: string;
   type: 'standard' | 'deluxe' | 'suite' | 'penthouse';
   description: string;
-  shortDescription: string;
+  short_description: string;
   price: number;
-  originalPrice?: number;
+  original_price?: number;
   capacity: number;
   size: number;
   bedType: string;
-  cover_image: string;
-  images: string[];
-  amenities?: string[];
+  cover_image?: string;
+  images?: string[];
+  amenities: string[];
   featured: boolean;
   available: boolean;
   rating: number;
