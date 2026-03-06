@@ -17,9 +17,7 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { useBookingStore } from "@/stores/booking-store";
-// import { useAuthStore } from "@/stores/auth-store";
 import type { Room, DateRange } from "@/types/types";
-// import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -30,9 +28,7 @@ interface BookingSummaryProps {
 }
 
 const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
-  // const navigate = useNavigate();
   const { setCurrentBooking } = useBookingStore();
-  // const { isAuthenticated } = useAuthStore();
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined

@@ -18,21 +18,26 @@ import { userLogin } from "@/actions/auth"
 import { Controller, useForm } from "react-hook-form"
 import { loginSchema, type LoginSchema } from "@/zod-schema"
 import { toast } from "sonner"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useAuthStore } from "@/stores/auth-store"
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = React.useState(false)
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+
+  const setSession = useAuthStore((s) => s.setSession);
 
   const { mutate, isPending } = useMutation({
     mutationFn: userLogin,
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      setSession(data?.session ?? null);
+
       await queryClient.invalidateQueries({ queryKey: ["session"] })
-      await queryClient.invalidateQueries({ queryKey: ["userName"] })
-      await queryClient.invalidateQueries({ queryKey: ["profile"] })
       toast.success("Login Successful")
-      navigate("/")
+      navigate(redirect)
     },
     onError: (err) => {
       console.error("LOGIN ERROR:", err)

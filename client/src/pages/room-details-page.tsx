@@ -1,4 +1,4 @@
-import { useState } from "react"
+
 import { useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Star, Users, Maximize, Check, ArrowLeft, Wifi, Coffee, Tv, Bath, Wind, Lock } from "lucide-react"
@@ -8,7 +8,6 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ImageGallery from "@/components/rooms/image-gallery"
 import BookingSummary from "@/components/booking/booking-summary"
-import AuthModal from "@/components/auth/auth-modal"
 import { useAuthStore } from "@/stores/auth-store"
 import SkeletonLoader from "@/components/ui/skeleton-loader"
 import { toast } from "sonner"
@@ -33,8 +32,8 @@ const amenityIcons: Record<string, React.ReactNode> = {
 const RoomDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const { isAuthenticated } = useAuthStore();
+  const session = useAuthStore((s) => s.session)
+  const isAuthenticated = !!session?.access_token;
 
   const { data: room, isLoading } = useQuery<Room>({
   queryKey: ["room", id],
@@ -56,12 +55,14 @@ const RoomDetailsPage = () => {
 
   const handleBookNow = () => {
     if (!isAuthenticated) {
-      setShowAuthModal(true);
-    } else {
-      toast.success('Booking initiated! Redirecting to confirmation...');
-      navigate(`/booking/confirm/${room?.id}`);
+      toast.error("Please sign in to continue");
+      navigate(`/login?redirect=/booking/confirm/${room?.id}`);
+      return;
     }
-  }
+
+    toast.success("Booking initiated! Redirecting...");
+    navigate(`/booking/confirm/${room?.id}`);
+  };
 
   if (isLoading) {
     return (
@@ -250,12 +251,6 @@ const RoomDetailsPage = () => {
           </div>
         </section>
       </div>
-
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode="login"
-      />
     </>
   )
 }
