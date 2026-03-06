@@ -40,16 +40,13 @@ export async function userLogin({ email, password }: LoginSchema) {
         password,
       });
 
-      if (error) throw new Error(error.message);
-
-      toast.success("Login successful!");
-
+      if (error) {
+        throw new Error(error.message);
+      }
       return data;
     } catch (error) {
         const err = error as AuthError;
-        toast.error("Login Failed", {
-          description: err.message,
-        });
+        console.log(err.message);
     }
 }
 
