@@ -25,7 +25,9 @@ const amenityIcons: Record<string, React.ReactNode> = {
 
 const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
 
-  const imageUrl = `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.cover_image}`
+  const imageUrl = room.cover_image 
+  ? `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.cover_image}`
+  : '/placeholder.jpg';
 
   return (
     <motion.div
