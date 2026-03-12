@@ -32,8 +32,17 @@ const amenityIcons: Record<string, React.ReactNode> = {
 const RoomDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const session = useAuthStore((s) => s.session)
+  const session = useAuthStore((s) => s.session);
+  const _hasHydrated = useAuthStore((s) => s._hasHydrated);
   const isAuthenticated = !!session?.access_token;
+
+  // --- ADD THESE CONSOLE LOGS ---
+  console.log("--- RoomDetailsPage Render ---");
+  console.log("Auth Store Hydrated:", _hasHydrated);
+  console.log("Current Session:", session);
+  console.log("Is Authenticated:", isAuthenticated);
+  console.log("----------------------------");
+  // ------------------------------
 
   const { data: room, isLoading } = useQuery<Room>({
   queryKey: ["room", id],
@@ -54,6 +63,15 @@ const RoomDetailsPage = () => {
 
 
   const handleBookNow = () => {
+
+     // --- ADD THESE CONSOLE LOGS TO THE FUNCTION ---
+    console.log("--- handleBookNow Called ---");
+    console.log("Auth Store Hydrated (in handleBookNow):", _hasHydrated);
+    console.log("Current Session (in handleBookNow):", session);
+    console.log("Is Authenticated (in handleBookNow):", isAuthenticated);
+    console.log("----------------------------");
+    // ---------------------------------------------
+    if (!_hasHydrated) return
     if (!isAuthenticated) {
       toast.error("Please sign in to continue");
       navigate(`/login?redirect=/booking/confirm/${room?.id}`);
@@ -246,7 +264,7 @@ const RoomDetailsPage = () => {
 
             {/* booking widget */}
             <div className="lg:col-span-1">
-              <BookingSummary room={room} onBookNow={handleBookNow} />
+              <BookingSummary room={room} onBookNow={handleBookNow} disabled={!_hasHydrated || isLoading} />
             </div>
           </div>
         </section>

@@ -25,9 +25,10 @@ import { cn } from "@/lib/utils";
 interface BookingSummaryProps {
   room: Room;
   onBookNow: () => void;
+  disabled?: boolean;
 }
 
-const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
+const BookingSummary = ({ room, onBookNow, disabled }: BookingSummaryProps) => {
   const { setCurrentBooking } = useBookingStore();
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
@@ -52,6 +53,8 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
   };
 
   const isBookingReady = dateRange.from && dateRange.to && nights > 0;
+
+  const isButtonDisable = disabled || !isBookingReady;
 
   return (
     <motion.div
@@ -193,7 +196,7 @@ const BookingSummary = ({ room, onBookNow }: BookingSummaryProps) => {
         variant="gold"
         size="lg"
         className="w-full mb-4 cursor-pointer"
-        disabled={!isBookingReady}
+        disabled={isButtonDisable}
         onClick={handleBooking}
       >
         <CreditCard className="h-4 w-4" />
