@@ -29,6 +29,9 @@ const RoomCard = ({ room, index = 0 }: RoomCardProps) => {
   ? `${import.meta.env.VITE_DIRECTUS_URL}/assets/${room.cover_image}`
   : '/placeholder.jpg';
 
+  console.log('Cover image value:', room.cover_image);
+  console.log('Generated URL:', imageUrl);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
