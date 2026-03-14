@@ -70,7 +70,7 @@ const RoomDetailsPage = () => {
     console.log("Current Session (in handleBookNow):", session);
     console.log("Is Authenticated (in handleBookNow):", isAuthenticated);
     console.log("----------------------------");
-    // ---------------------------------------------
+    // --------------------------------------------- 
     if (!_hasHydrated) return
     if (!isAuthenticated) {
       toast.error("Please sign in to continue");
