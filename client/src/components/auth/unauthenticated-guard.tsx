@@ -2,7 +2,7 @@ import useSession from "@/hooks/use-session";
 import type { ReactNode } from "react";
 import { Navigate } from "react-router";
 
-function UnauthenticatedGuard({ children } : { childred: ReactNode }) {
+function UnauthenticatedGuard({ children } : { children: ReactNode }) {
   const { session, passwordResetState } = useSession();
 
   if (session && !passwordResetState) {
