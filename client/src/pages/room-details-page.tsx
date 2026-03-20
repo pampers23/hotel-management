@@ -33,7 +33,7 @@ const RoomDetailsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const session = useAuthStore((s) => s.session);
-  const _hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const _hasHydrated = useAuthStore();
   const isAuthenticated = !!session?.access_token;
 
   // --- ADD THESE CONSOLE LOGS ---
@@ -63,24 +63,19 @@ const RoomDetailsPage = () => {
 
 
   const handleBookNow = () => {
+  console.log("--- handleBookNow Called ---");
+  console.log("Current Session:", session);
+  console.log("Is Authenticated:", isAuthenticated);
 
-     // --- ADD THESE CONSOLE LOGS TO THE FUNCTION ---
-    console.log("--- handleBookNow Called ---");
-    console.log("Auth Store Hydrated (in handleBookNow):", _hasHydrated);
-    console.log("Current Session (in handleBookNow):", session);
-    console.log("Is Authenticated (in handleBookNow):", isAuthenticated);
-    console.log("----------------------------");
-    // --------------------------------------------- 
-    if (!_hasHydrated) return
-    if (!isAuthenticated) {
-      toast.error("Please sign in to continue");
-      navigate(`/login?redirect=/booking/confirm/${room?.id}`);
-      return;
-    }
+  if (!isAuthenticated) {
+    toast.error("Please sign in to continue");
+    navigate(`/login?redirect=/booking/confirm/${room?.id}`);
+    return;
+  }
 
-    toast.success("Booking initiated! Redirecting...");
-    navigate(`/booking/confirm/${room?.id}`);
-  };
+  toast.success("Booking initiated! Redirecting...");
+  navigate(`/booking/confirm/${room?.id}`);
+};
 
   if (isLoading) {
     return (

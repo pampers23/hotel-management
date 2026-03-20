@@ -1,52 +1,24 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import type { Session, User as SupabaseUser } from "@supabase/supabase-js";
+import { create } from 'zustand'
+import type { Session } from '@supabase/supabase-js'
 
-interface AuthStore {
-  user: SupabaseUser | null;
-  session: Session | null;
-  isLoading: boolean;
-  _hasHydrated: boolean;
-  setLoading: (v: boolean) => void;
-  setSession: (session: Session | null) => void;
-  logout: () => void;
-  setHasHydrated: (v: boolean) => void;
+interface AuthState {
+  session: Session | null
+  isLoading: boolean
+  passwordResetState: boolean
+
+  setSession: (session: Session | null) => void
+  setLoading: (loading: boolean) => void
+  setPasswordReset: (active: boolean) => void
+  clearSession: () => void
 }
 
-export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set) => ({
-      user: null,
-      session: null,
-      isLoading: false,
-      _hasHydrated: false,
+export const useAuthStore = create<AuthState>()((set) => ({
+  session: null,
+  isLoading: true,              // start as loading
+  passwordResetState: false,
 
-
-      setLoading: (v) => set({ isLoading: v }),
-
-      setSession: (session) =>
-        set({
-          session,
-          user: session?.user ?? null,
-        }),
-
-      logout: () =>
-        set({
-          session: null,
-          user: null,
-        }),
-        setHasHydrated: (v) => set({ _hasHydrated: v })
-    }),
-    {
-      name: "auth-storage",
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
-        session: state.session,
-        user: state.user,
-      }),
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
-      }
-    }
-  )
-);
+  setSession: (session) => set({ session, isLoading: false }),
+  setLoading: (loading) => set({ isLoading: loading }),
+  setPasswordReset: (active) => set({ passwordResetState: active }),
+  clearSession: () => set({ session: null, isLoading: false }),
+}))

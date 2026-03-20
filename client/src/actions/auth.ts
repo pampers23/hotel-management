@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import type { LoginSchema, SignUpSchema } from "@/zod-schema"
+import { usePasswordResetStore } from "@/zustand-store"
 import { AuthError } from "@supabase/supabase-js"
 import { toast } from "sonner"
 
@@ -43,10 +44,32 @@ export async function userLogin({ email, password }: LoginSchema) {
       if (error) {
         throw new Error(error.message);
       }
-      return data;
+
+      if (!error && data.session) {
+        console.log("[LOGIN] Supabase gave session:", data.session.user.email);
+      }
+      
+      if (!data.session) {
+        return {
+          success: false,
+          needConfirmation: true,
+          message: "Please check your email inbox (and spam folder) for a confirmation link before you can log in.",
+          user: data.user
+        }
+      }
+
+      return {
+        success: true,
+        session: data.session,
+        user: data.user
+      }
     } catch (error) {
-        const err = error as AuthError;
-        console.log(err.message);
+        console.error(error);
+        return {
+          success: false,
+          needConfirmation: false,
+          message: "An unexpected error occurred.",
+        }
     }
 }
 
@@ -61,4 +84,46 @@ export async function userLogout() {
         const err = error as AuthError;
         toast.error(err.message)
     }
+}
+
+export async function authUpdatePassword({ password }: { password: string }) {
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    usePasswordResetStore.getState().setPasswordResetState(false);
+
+    await supabase.auth.signOut();
+
+    toast.success("Password has been reset", {
+      description: "You can now log in with your new password.",
+    });
+  } catch (error) {
+    const err = error as AuthError;
+    toast.error(err.message);
+  }
+}
+
+export async function updatePassword({ password }: { password: string }) {
+  try {
+    const { error } = await supabase.auth.updateUser({
+      password,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    toast.success("Password updated!", {
+      description: "Your password has been changed successfully.",
+    });
+  } catch (error) {
+    const err = error as AuthError;
+    toast.error(err.message);
+  }
 }
