@@ -13,7 +13,7 @@ import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import authImage from "@/assets/download.jpg"
 import { Eye, EyeOff } from "lucide-react"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { userLogin } from "@/actions/auth"
 import { Controller, useForm } from "react-hook-form"
 import { loginSchema, type LoginSchema } from "@/zod-schema"
@@ -24,7 +24,6 @@ import { useAuthStore } from "@/stores/auth-store"
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = React.useState(false)
-  const queryClient = useQueryClient();
   const location = useLocation();
   const redirect = new URLSearchParams(location.search).get("redirect") || "/";
 
@@ -33,11 +32,15 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const { mutate, isPending } = useMutation({
     mutationFn: userLogin,
     onSuccess: async (data) => {
+     if (data.success) {
       setSession(data?.session ?? null);
-
-      await queryClient.invalidateQueries({ queryKey: ["session"] })
-      toast.success("Login Successful")
-      navigate(redirect)
+      toast.success("Login Successfully");
+      navigate(redirect);
+     } else if (data?.needConfirmation) {
+      toast.info(data.message || "Check your email to confirm your account");
+     } else {
+      toast.error(data.message || "Login Failed.")
+     }
     },
     onError: (err) => {
       console.error("LOGIN ERROR:", err)
