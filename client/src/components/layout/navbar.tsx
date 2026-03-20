@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getSession, getProfile } from "@/actions/private"
 import { userLogout } from "@/actions/auth"
+import { QueryInvalidator } from "@/hooks/use-query-invalidator"
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -58,6 +59,7 @@ const Navbar = () => {
 
   return (
     <>
+      <QueryInvalidator />
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border/50">
         <div className="container-luxury">
           <div className="flex items-center justify-between h-20">
