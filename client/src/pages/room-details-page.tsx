@@ -36,14 +36,6 @@ const RoomDetailsPage = () => {
   const _hasHydrated = useAuthStore();
   const isAuthenticated = !!session?.access_token;
 
-  // --- ADD THESE CONSOLE LOGS ---
-  console.log("--- RoomDetailsPage Render ---");
-  console.log("Auth Store Hydrated:", _hasHydrated);
-  console.log("Current Session:", session);
-  console.log("Is Authenticated:", isAuthenticated);
-  console.log("----------------------------");
-  // ------------------------------
-
   const { data: room, isLoading } = useQuery<Room>({
   queryKey: ["room", id],
   queryFn: async () => {
@@ -63,10 +55,6 @@ const RoomDetailsPage = () => {
 
 
   const handleBookNow = () => {
-  console.log("--- handleBookNow Called ---");
-  console.log("Current Session:", session);
-  console.log("Is Authenticated:", isAuthenticated);
-
   if (!isAuthenticated) {
     toast.error("Please sign in to continue");
     navigate(`/login?redirect=/booking/confirm/${room?.id}`);
