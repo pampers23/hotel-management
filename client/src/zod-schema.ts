@@ -16,6 +16,14 @@ export const loginSchema = z.object({
 })
 
 
+export const forgotPasswordSchema = z.object({
+    email: z.string().email()
+})
+
+
+export const updatePasswordSchema = z.object({
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+})
 
 export type SignUpSchema = z.infer<typeof signUpSchema>
 export type LoginSchema = z.infer<typeof loginSchema>

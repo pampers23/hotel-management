@@ -273,6 +273,31 @@ const BookingConfirmationPage = () => {
 
                 <Separator className="my-4" />
 
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Check-in</span>
+                    <span className="font-medium">
+                      {format(currentBooking.dateRange.from, 'EEE, MMMM d, yyyy')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Check-out</span>
+                    <span className="font-medium">
+                      {format(currentBooking.dateRange.to, 'EEE, MMMM d, yyyy')}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Guests</span>
+                    <span className="font-medium">{currentBooking.guests} {currentBooking.guests === 1 ? 'Guest' : 'Guests'}</span>
+                  </div>
+                  <span className="flex justify-between">
+                    <span className="text-muted-foreground">Duration</span>
+                    <span className="font-medium">{nights} {nights === 1 ? 'Night' : 'Nights'}</span>
+                  </span>
+                </div>
+
+                <Separator className="my-4" />
+
                 <h3 className="font-semibold mb-2">Guest Information</h3>
                 <div className="space-y-2 text-sm">
                   <p><span className="text-muted-foreground">Name:</span> {user?.user_metadata?.name}</p>
@@ -336,7 +361,7 @@ const BookingConfirmationPage = () => {
                   {mutation.isPending ? 'Processing...' : 'Confirm Booking'}
                 </Button>
 
-                <p className="text-xs text-center text-muted-foreground">
+                <p className="text-xs text-center text-muted-foreground mt-3.5">
                   By confirming, you agree to our Terms of Service and Cancellation Policy.
                 </p>
               </CardContent>
