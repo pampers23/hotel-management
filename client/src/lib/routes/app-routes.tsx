@@ -62,6 +62,7 @@ const AppRoutes = () => {
                 </AuthGuard>
               }
             />
+            
           </Route>
 
           <Route path="*" element={<NotFound />} />  

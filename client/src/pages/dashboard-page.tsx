@@ -64,6 +64,8 @@ const DashboardPage = () => {
     enabled: !!user?.id,
   })
 
+  
+
   // redirect if not logged in (after session is resolved)
   useEffect(() => {
     if (!isSessionPending && !session) {
@@ -91,40 +93,71 @@ const DashboardPage = () => {
     (b) => b.status === "completed" || b.status === "cancelled"
   )
 
-  const BookingCard = ({ booking }: { booking: Booking }) => (
+  const BookingCard = ({ booking }: { booking: Booking }) => {
+    const imageUrl = booking.roomImage
+      ? `${import.meta.env.VITE_DIRECTUS_URL}/assets/${booking.roomImage}`
+      : '/placeholder-room.jpg'
+
+    console.log('Booking Cover image value:', booking.roomImage);
+    console.log('Generated URL:', imageUrl);
+
+    const formatBookingDate = (dateValue: string | Date | null | undefined): string => {
+      if (!dateValue) return "—";
+
+      try {
+        const date = typeof dateValue === "string" 
+          ? new Date(dateValue) 
+          : dateValue;
+
+        // Check if date is valid
+        if (isNaN(date.getTime())) {
+          return "—";
+        }
+
+        return format(date, "MMM d");
+      } catch {
+        return "—";
+      }
+    };
+
+  return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="border rounded-xl overflow-hidden hover:shadow-md transition-shadow"
     >
       <div className="flex flex-col sm:flex-row">
-        <img
-          src={booking.roomImage}
-          alt={booking.roomName}
-          className="w-full sm:w-32 h-32 object-cover"
-        />
+        <div className="relative w-full sm:w-48 h-26 sm:h-32 flex-shrink-0 overflow-hidden rounded-xl mt-3 ml-3">
+          <img
+            src={imageUrl}
+            alt={booking.roomName || "Room"}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = '/placeholder-room.jpg';
+            }}
+          />
+        </div>
         <div className="flex-1 p-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Badge variant={statusStyle[booking.status].variant}>
-                  {statusStyle[booking.status].label}
+                <Badge variant={statusStyle[booking.status]?.variant || "secondary"}>
+                  {statusStyle[booking.status]?.label || "Unknown"}
                 </Badge>
-                <span className="text-xs text-muted-foreground">
-                  #{booking.id}
-                </span>
               </div>
               <h3 className="font-heading text-lg font-semibold">
-                {booking.roomName}
+                {booking.roomName || "Unknown Room"}
               </h3>
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <MapPin className="h-3 w-3" />
                 <span>Lumière Hotel</span>
               </div>
             </div>
+
             <div className="text-right">
               <p className="font-heading text-xl font-bold">
-                ${booking.totalPrice}
+                ${booking.totalPrice || 0}
               </p>
               <p className="text-xs text-muted-foreground">Total</p>
             </div>
@@ -136,21 +169,22 @@ const DashboardPage = () => {
             <div className="flex items-center gap-1">
               <Calendar className="h-3.5 w-3.5" />
               <span>
-                {format(booking.checkIn, "MMM d")} -{" "}
-                {format(booking.checkOut, "MMM d, yyyy")}
+                {formatBookingDate(booking.checkIn)} -{" "}
+                {formatBookingDate(booking.checkOut)}
               </span>
             </div>
             <div className="flex items-center gap-1">
               <User className="h-3.5 w-3.5" />
               <span>
-                {booking.guests} {booking.guests === 1 ? "Guest" : "Guests"}
+                {booking.guests || 1} {booking.guests === 1 ? "Guest" : "Guests"}
               </span>
             </div>
           </div>
         </div>
       </div>
     </motion.div>
-  )
+  );
+};
 
   // optional: avoid flashing dashboard before redirect
   if (isSessionPending || isBookingsPending) return null

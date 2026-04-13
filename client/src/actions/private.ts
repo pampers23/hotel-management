@@ -111,9 +111,31 @@ export async function getBookings(userId: string): Promise<Booking[]> {
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      console.error(error);
+      toast.error("Failed to fetch bookings");
+      return []
+    }
 
-    return data
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    const bookings: Booking[] = data.map((b) => ({
+      id: b.id,
+      userId: b.user_id,
+      roomId: b.room_id || "",                    
+      roomName: b.rooms?.name || b.room_name || "Unknown Room",
+      roomImage: b.rooms?.cover_image || b.room_image,
+      checkIn: b.check_in,
+      checkOut: b.check_out,
+      guests: b.guests || 1,
+      totalPrice: Number(b.total_price) || 0,
+      status: (b.status as Booking['status']) || "pending",
+      createdAt: b.created_at,                    
+    }));
+    
+    return bookings;
   } catch (error) {
     const err = error as AuthError;
     toast.error(`Failed to fetch bookings: ${err.message}`);
