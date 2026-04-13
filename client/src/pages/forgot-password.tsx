@@ -1,17 +1,28 @@
-import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Link } from "react-router-dom"
+import { useMutation } from "@tanstack/react-query"
+import { sendPasswordResetLink } from "@/actions/auth"
+import { useForm } from "react-hook-form"
+import { forgotPasswordSchema, type ForgotPasswordSchema } from "@/zod-schema"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { DotPulse } from "ldrs/react"
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("")
+  const { mutate, isPending } = useMutation({
+    mutationFn: sendPasswordResetLink,
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const form = useForm<ForgotPasswordSchema>({
+    defaultValues: {
+      email: "",
+    },
+    resolver: zodResolver(forgotPasswordSchema),
+  });
 
-    // TODO: call your forgot-password API here
-    console.log("Reset password email:", email)
+  function onSubmit(values: ForgotPasswordSchema) {
+    mutate(values);
   }
 
   return (
@@ -29,7 +40,7 @@ const ForgotPassword = () => {
           </p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6 space-y-6">
             <div className="flex flex-col gap-2">
               <Label
                 htmlFor="email"
@@ -44,17 +55,23 @@ const ForgotPassword = () => {
                 autoComplete="email"
                 autoFocus
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 className="h-10 w-full rounded-md border px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
             <Button
+              disabled={isPending}
               type="submit"
               className="cursor-pointer h-10 w-full rounded-md bg-primary text-sm font-medium text-white hover:bg-primary/90"
             >
-              Send Password Link
+              {isPending ? (
+                <>
+                  Sending
+                  <DotPulse size="30" speed="1.3" color="white"/>
+                </>
+              ) : (
+                "Send reset password link"
+              )}
             </Button>
           </form>
 

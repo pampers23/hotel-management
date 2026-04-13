@@ -11,20 +11,20 @@ export type Booking = {
   id: string;
   roomId: string;
   roomName: string;
-  roomImage: string;
+  roomImage?: string;
   checkIn: Date;
   checkOut: Date;
   guests: number;
   totalPrice: number;
   status: 'confirmed' | 'pending' | 'cancelled' | 'completed';
-  createdAt: Date;
+  createdAt?: string;
 }
 
 export type BookingRow = {
   id: string;
   room_id: string;
   room_name: string;
-  room_image: string;
+  cover_image?: string;
   check_in: string;
   check_out: string;
   guests: number;

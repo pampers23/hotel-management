@@ -1,4 +1,4 @@
-import { z } from "zod"
+import {     z } from "zod"
 
 export const signUpSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -27,3 +27,5 @@ export const updatePasswordSchema = z.object({
 
 export type SignUpSchema = z.infer<typeof signUpSchema>
 export type LoginSchema = z.infer<typeof loginSchema>
+export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>
+export type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>
